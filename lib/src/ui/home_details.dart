@@ -70,6 +70,14 @@ class HomeDetailsState extends State<HomeDetails> {
                                                     ? data.firstImageUrl
                                                     : "http://www.hogarencuba.com/images/t_phantom-house.jpg",
                                                 fit: BoxFit.cover,
+                                                placeholder: (context, url) =>
+                                                    Container(
+                                                        padding: EdgeInsets.all(
+                                                            20),
+                                                        child: Center(
+                                                            child: CircularProgressIndicator()
+                                                        )
+                                                    ),
                                                 errorWidget: (context, url,
                                                     error) =>
                                                     Image.asset(
@@ -99,7 +107,7 @@ class HomeDetailsState extends State<HomeDetails> {
                                                         vertical: 10,
                                                         horizontal: 20
                                                     ),
-                                                    child: Contact()
+                                                    child: Contact(data: data)
                                                 ),
                                                 Container(
                                                     padding: EdgeInsets.all(20),
@@ -113,7 +121,7 @@ class HomeDetailsState extends State<HomeDetails> {
                                                         top: 10,
                                                         right: 20,
                                                         bottom: 20),
-                                                    child: Contact()
+                                                    child: Contact(data: data)
                                                 )
                                             ],
                                         ),
@@ -129,6 +137,10 @@ class HomeDetailsState extends State<HomeDetails> {
 }
 
 class Contact extends StatelessWidget {
+    
+    final HomeEntity data;
+    
+    const Contact({Key key, this.data}) : super(key: key);
     
     @override
     Widget build(BuildContext context) {
@@ -185,7 +197,7 @@ class Contact extends StatelessWidget {
                             "mailto:contact@hogarencuba.com")
                         ) {
                             await launch(
-                                "mailto:contact@hogarencuba.com");
+                                "mailto:contact@hogarencuba.com?subject=Acerca de la propiedad ${data.code}");
                         }
                     }
                 )

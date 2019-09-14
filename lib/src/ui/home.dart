@@ -189,7 +189,7 @@ class HomeCard extends StatelessWidget {
                 );
             },
             child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                padding: EdgeInsets.all(10),
                 child: Card(
                     elevation: 0.0,
                     color: color,
@@ -284,7 +284,7 @@ class HomeCard extends StatelessWidget {
                                                                             color: Colors
                                                                                 .white,
                                                                             fontWeight: FontWeight
-                                                                                .normal
+                                                                                .normal,
                                                                         )
                                                                     )
                                                                 ]
