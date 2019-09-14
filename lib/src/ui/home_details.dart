@@ -25,11 +25,7 @@ class HomeDetailsState extends State<HomeDetails> {
     
     @override
     Widget build(BuildContext context) {
-        SystemChrome.setPreferredOrientations([
-            DeviceOrientation.portraitUp,
-            DeviceOrientation.landscapeLeft,
-            DeviceOrientation.landscapeRight
-        ]);
+        SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
         SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
         SystemChrome.setSystemUIOverlayStyle(
             SystemUiOverlayStyle.light.copyWith(
@@ -66,6 +62,7 @@ class HomeDetailsState extends State<HomeDetails> {
                                         expandedHeight: 200.0,
                                         pinned: true,
                                         floating: true,
+                                        titleSpacing: 0,
                                         flexibleSpace: FlexibleSpaceBar(
                                             background: CachedNetworkImage(
                                                 imageUrl: data.firstImageUrl !=
@@ -73,12 +70,6 @@ class HomeDetailsState extends State<HomeDetails> {
                                                     ? data.firstImageUrl
                                                     : "http://www.hogarencuba.com/images/t_phantom-house.jpg",
                                                 fit: BoxFit.cover,
-                                                placeholder: (context, url) =>
-                                                    Padding(
-                                                        padding: EdgeInsets.all(
-                                                            20),
-                                                        child: CircularProgressIndicator()
-                                                    ),
                                                 errorWidget: (context, url,
                                                     error) =>
                                                     Image.asset(

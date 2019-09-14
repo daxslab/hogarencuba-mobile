@@ -8,6 +8,7 @@ import 'package:hogarencuba/src/util/colors.dart';
 import 'package:localstorage/localstorage.dart';
 
 import '../api/blocs.dart';
+import 'about.dart';
 import 'home_details.dart';
 
 class Home extends StatefulWidget {
@@ -30,11 +31,7 @@ class HomeState extends State<Home> {
     
     @override
     Widget build(BuildContext context) {
-        SystemChrome.setPreferredOrientations([
-            DeviceOrientation.portraitUp,
-            DeviceOrientation.landscapeLeft,
-            DeviceOrientation.landscapeRight
-        ]);
+        SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
         SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
         SystemChrome.setSystemUIOverlayStyle(
             SystemUiOverlayStyle.light.copyWith(
@@ -51,6 +48,24 @@ class HomeState extends State<Home> {
                         color: Colors.white
                     ),
                 ),
+                actions: <Widget>[
+                    IconButton(
+                        icon: Icon(Icons.filter_list),
+                        onPressed: () {
+                        
+                        }),
+                    IconButton(
+                        icon: Icon(Icons.info_outline),
+                        onPressed: () {
+                            Navigator.of(context).push(
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        About()
+                                )
+                            );
+                        })
+                ],
+            
             ),
             body: Container(
                 color: Colors.white,
@@ -86,7 +101,8 @@ class HomeState extends State<Home> {
                                     return ListView.builder(
                                         itemCount: homes.length,
                                         itemBuilder: (context, index) {
-                                            return HomeCard(data: homes[index]);
+                                            return HomeCard(
+                                                data: homes[index]);
                                         }
                                     );
                                 } else if (snapshot.hasError) {
@@ -104,7 +120,7 @@ class HomeState extends State<Home> {
                                                         .map((i) =>
                                                         HomeEntity.fromJson(i))
                                                         .toList();
-
+                                                    
                                                     return ListView.builder(
                                                         itemCount: homes.length,
                                                         itemBuilder: (context,
@@ -113,7 +129,6 @@ class HomeState extends State<Home> {
                                                                 data: homes[index]);
                                                         }
                                                     );
-                                                    
                                                 } else {
                                                     return Container(
                                                         padding: EdgeInsets.all(
@@ -174,7 +189,7 @@ class HomeCard extends StatelessWidget {
                 );
             },
             child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                 child: Card(
                     elevation: 0.0,
                     color: color,
@@ -224,7 +239,7 @@ class HomeCard extends StatelessWidget {
                                                             style: TextStyle(
                                                                 color: Colors
                                                                     .white,
-                                                                fontSize: 20,
+                                                                fontSize: 18,
                                                                 fontWeight: FontWeight
                                                                     .bold
                                                             )
@@ -249,11 +264,6 @@ class HomeCard extends StatelessWidget {
                                                 crossAxisAlignment: CrossAxisAlignment
                                                     .start,
                                                 children: <Widget>[
-                                                    Icon(
-                                                        Icons.location_on,
-                                                        color: Colors.white,
-                                                        size: 14
-                                                    ),
                                                     Expanded(
                                                         child: RichText(
                                                             text: TextSpan(
