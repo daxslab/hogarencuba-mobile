@@ -33,17 +33,20 @@ class About extends StatelessWidget {
                 color: Colors.white,
                 child: Stack(
                     children: <Widget>[
-                        Image.asset(
-                            "assets/images/background.png",
-                            fit: BoxFit.cover,
-                            width: MediaQuery
-                                .of(context)
-                                .size
-                                .width,
-                            height: MediaQuery
-                                .of(context)
-                                .size
-                                .height,
+                        Opacity(
+                            opacity: 0.6,
+                            child: Image.asset(
+                                "assets/images/background.png",
+                                fit: BoxFit.cover,
+                                width: MediaQuery
+                                    .of(context)
+                                    .size
+                                    .width,
+                                height: MediaQuery
+                                    .of(context)
+                                    .size
+                                    .height,
+                            )
                         ),
                         Container(
                             child: CustomScrollView(
