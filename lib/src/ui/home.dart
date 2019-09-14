@@ -368,8 +368,8 @@ class HomeCard extends StatelessWidget {
                                                             right: 10),
                                                     ),
                                                     Text(
-                                                        data.bedroomsCount > 0
-                                                            ? data.bedroomsCount
+                                                        data.garageCount > 0
+                                                            ? data.garageCount
                                                             .toString()
                                                             : "No",
                                                         style: TextStyle(
