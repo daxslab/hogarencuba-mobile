@@ -24,6 +24,40 @@ class HomeState extends State<Home> {
     final _formKey = GlobalKey<FormState>();
     final LocalStorage storage = LocalStorage('dataStorage');
     
+    final List<String> numbers = [
+        "--Cualquiera--",
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+    ];
+    
+    final List<String> privinces = [
+        "--Cualquiera--",
+        "Pinar del Río",
+        "Artemisa",
+        "La Habana",
+        "Mayabeque",
+        "Matanzas",
+        "Villa Clara",
+        "Cienfuegos",
+        "Sancti Spíritus",
+        "Ciego de Ávila",
+        "Camagüey",
+        "Las Tunas",
+        "Granma",
+        "Holguín",
+        "Santiago de Cuba",
+        "Guantánamo",
+        "Isla de la Juventud",
+    ];
+    
     final List<String> types = [
         "--Cualquiera--",
         "Casa",
@@ -31,9 +65,12 @@ class HomeState extends State<Home> {
         "Terreno"
     ];
     
-    String typeValue = "One";
+    String provinceValue = "--Cualquiera--";
+    String typeValue = "--Cualquiera--";
     final minPriceController = TextEditingController();
     final maxPriceController = TextEditingController();
+    String bedroomValue = "--Cualquiera--";
+    String bathroomValue = "--Cualquiera--";
     
     String province;
     String city;
@@ -126,19 +163,21 @@ class HomeState extends State<Home> {
                                     List<HomeEntity> homes = list.map((i) =>
                                         HomeEntity.fromJson(i))
                                         .toList();
-                                    
+
                                     if (this.province != null) {
-                                        homes = homes.where((home) =>
+                                        homes = homes.where((
+                                            home) =>
                                             home.location.trim()
-                                                .startsWith(
+                                                .endsWith(
                                                 this.province))
                                             .toList();
                                     }
-                                    
+
                                     if (this.city != null) {
-                                        homes = homes.where((home) =>
+                                        homes = homes.where((
+                                            home) =>
                                             home.location.trim()
-                                                .endsWith(
+                                                .startsWith(
                                                 this.city))
                                             .toList();
                                     }
@@ -159,6 +198,20 @@ class HomeState extends State<Home> {
                                         homes = homes.where((home) =>
                                         home.price <=
                                             this.maxPrice).toList();
+                                    }
+                                    
+                                    if (this.bedrooms != null) {
+                                        homes = homes.where((home) =>
+                                        home.bedroomsCount ==
+                                            this.bedrooms)
+                                            .toList();
+                                    }
+                                    
+                                    if (this.bathrooms != null) {
+                                        homes = homes.where((home) =>
+                                        home.bathroomsCount ==
+                                            this.bathrooms)
+                                            .toList();
                                     }
                                     
                                     if (homes.isNotEmpty) {
@@ -192,7 +245,7 @@ class HomeState extends State<Home> {
                                                         homes = homes.where((
                                                             home) =>
                                                             home.location.trim()
-                                                                .startsWith(
+                                                                .endsWith(
                                                                 this.province))
                                                             .toList();
                                                     }
@@ -201,7 +254,7 @@ class HomeState extends State<Home> {
                                                         homes = homes.where((
                                                             home) =>
                                                             home.location.trim()
-                                                                .endsWith(
+                                                                .startsWith(
                                                                 this.city))
                                                             .toList();
                                                     }
@@ -226,6 +279,23 @@ class HomeState extends State<Home> {
                                                             home) =>
                                                         home.price <=
                                                             this.maxPrice)
+                                                            .toList();
+                                                    }
+                                                    
+                                                    if (this.bedrooms != null) {
+                                                        homes = homes.where((
+                                                            home) =>
+                                                        home.bedroomsCount ==
+                                                            this.bedrooms)
+                                                            .toList();
+                                                    }
+                                                    
+                                                    if (this.bathrooms !=
+                                                        null) {
+                                                        homes = homes.where((
+                                                            home) =>
+                                                        home.bathroomsCount ==
+                                                            this.bathrooms)
                                                             .toList();
                                                     }
                                                     
@@ -269,7 +339,7 @@ class HomeState extends State<Home> {
     void showFormToSearch() {
         showGeneralDialog(
             context: context,
-            barrierColor: Colors.black12.withOpacity(0.6),
+            barrierColor: Colors.black54,
             barrierDismissible: false,
             transitionDuration: Duration(milliseconds: 300),
             pageBuilder: (BuildContext context, __, ___) {
@@ -277,226 +347,364 @@ class HomeState extends State<Home> {
                     onTap: () {
                         FocusScope.of(context).requestFocus(FocusNode());
                     },
-                    child: SizedBox.expand(
-                        child: Padding(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 20,
-                                vertical: 30
-                            ),
-                            child: Material(
-                                borderRadius: BorderRadius.circular(4),
-                                color: Colors.white,
-                                child: Form(
-                                    key: _formKey,
-                                    child: Column(
-                                        mainAxisSize: MainAxisSize.max,
-                                        mainAxisAlignment: MainAxisAlignment
-                                            .spaceBetween,
-                                        children: <Widget>[
-                                            Padding(
-                                                padding: EdgeInsets.only(
-                                                    top: 20
+                    child: Padding(
+                        padding: EdgeInsets.all(20),
+                        child: Material(
+                            borderRadius: BorderRadius.circular(4),
+                            color: Colors.white,
+                            child: StatefulBuilder(
+                                builder: (BuildContext context,
+                                    StateSetter setState) {
+                                    return Form(
+                                        key: _formKey,
+                                        child: Column(
+                                            mainAxisSize: MainAxisSize.max,
+                                            mainAxisAlignment: MainAxisAlignment
+                                                .spaceBetween,
+                                            children: <Widget>[
+                                                Padding(
+                                                    padding: EdgeInsets.only(
+                                                        top: 20
+                                                    ),
+                                                    child: Column(
+                                                        mainAxisSize: MainAxisSize
+                                                            .min,
+                                                        children: <Widget>[
+                                                            Text(
+                                                                "¿Qué estás buscando?",
+                                                                style: TextStyle(
+                                                                    fontSize: 24,
+                                                                    fontWeight: FontWeight
+                                                                        .bold
+                                                                ),
+                                                                textAlign: TextAlign
+                                                                    .center,
+                                                            ),
+                                                            Padding(
+                                                                padding: EdgeInsets
+                                                                    .only(
+                                                                    top: 20),
+                                                                child: Divider(
+                                                                    color: Colors
+                                                                        .black26,
+                                                                    height: 1,
+                                                                ),
+                                                            )
+                                                        ],
+                                                    ),
                                                 ),
-                                                child: Column(
+                                                Expanded(
+                                                    child: ListView(
+                                                        children: <Widget>[
+                                                            Padding(
+                                                                padding: EdgeInsets
+                                                                    .symmetric(
+                                                                    horizontal: 20,
+                                                                    vertical: 10
+                                                                ),
+                                                                child: DropdownButton(
+                                                                    isExpanded: true,
+                                                                    value: provinceValue,
+                                                                    onChanged: (
+                                                                        newValue) {
+                                                                        setState(() {
+                                                                            provinceValue =
+                                                                                newValue;
+                                                                        });
+                                                                    },
+                                                                    items: privinces
+                                                                        .map((
+                                                                        type) {
+                                                                        return DropdownMenuItem(
+                                                                            child: new Text(
+                                                                                type),
+                                                                            value: type,
+                                                                        );
+                                                                    }).toList(),
+                                                                ),
+                                                            ),
+                                                            Padding(
+                                                                padding: EdgeInsets
+                                                                    .symmetric(
+                                                                    horizontal: 20,
+                                                                    vertical: 10
+                                                                ),
+                                                                child: DropdownButton(
+                                                                    isExpanded: true,
+                                                                    value: typeValue,
+                                                                    onChanged: (
+                                                                        newValue) {
+                                                                        setState(() {
+                                                                            typeValue =
+                                                                                newValue;
+                                                                        });
+                                                                    },
+                                                                    items: types
+                                                                        .map((
+                                                                        type) {
+                                                                        return DropdownMenuItem(
+                                                                            child: new Text(
+                                                                                type),
+                                                                            value: type,
+                                                                        );
+                                                                    }).toList(),
+                                                                ),
+                                                            ),
+                                                            Padding(
+                                                                padding: EdgeInsets
+                                                                    .symmetric(
+                                                                    horizontal: 20,
+                                                                    vertical: 10
+                                                                ),
+                                                                child: TextFormField(
+                                                                    decoration: InputDecoration(
+                                                                        labelText: "Precio mínimo",
+                                                                        errorMaxLines: 3,
+                                                                        prefixText: "\$ ",
+                                                                        prefixStyle: TextStyle(
+                                                                            fontWeight: FontWeight
+                                                                                .bold
+                                                                        ),
+                                                                        suffixText: " CUC",
+                                                                        suffixStyle: TextStyle(
+                                                                            fontWeight: FontWeight
+                                                                                .bold
+                                                                        )
+                                                                    ),
+                                                                    keyboardType: TextInputType
+                                                                        .number,
+                                                                    controller: minPriceController,
+                                                                    validator: (
+                                                                        value) {
+                                                                        if (value
+                                                                            .isNotEmpty &&
+                                                                            maxPriceController
+                                                                                .text
+                                                                                .isNotEmpty &&
+                                                                            int
+                                                                                .parse(
+                                                                                maxPriceController
+                                                                                    .text) <
+                                                                                int
+                                                                                    .parse(
+                                                                                    value)) {
+                                                                            return "El precio mínimo debe ser menor o igual que el precio máximo";
+                                                                        }
+                                                                        return null;
+                                                                    }
+                                                                )
+                                                            ),
+                                                            Padding(
+                                                                padding: EdgeInsets
+                                                                    .symmetric(
+                                                                    horizontal: 20,
+                                                                    vertical: 10
+                                                                ),
+                                                                child: TextFormField(
+                                                                    decoration: InputDecoration(
+                                                                        labelText: "Precio máximo",
+                                                                        errorMaxLines: 3,
+                                                                        prefixText: "\$ ",
+                                                                        prefixStyle: TextStyle(
+                                                                            fontWeight: FontWeight
+                                                                                .bold
+                                                                        ),
+                                                                        suffixText: " CUC",
+                                                                        suffixStyle: TextStyle(
+                                                                            fontWeight: FontWeight
+                                                                                .bold
+                                                                        )
+                                                                    ),
+                                                                    keyboardType: TextInputType
+                                                                        .number,
+                                                                    controller: maxPriceController,
+                                                                    validator: (
+                                                                        value) {
+                                                                        if (value
+                                                                            .isNotEmpty &&
+                                                                            minPriceController
+                                                                                .text
+                                                                                .isNotEmpty &&
+                                                                            int
+                                                                                .parse(
+                                                                                minPriceController
+                                                                                    .text) >
+                                                                                int
+                                                                                    .parse(
+                                                                                    value)) {
+                                                                            return "El precio máximo debe ser mayor o igual que el precio mínimo";
+                                                                        }
+                                                                        return null;
+                                                                    }
+                                                                )
+                                                            ),
+                                                            Padding(
+                                                                padding: EdgeInsets
+                                                                    .symmetric(
+                                                                    horizontal: 20,
+                                                                    vertical: 10
+                                                                ),
+                                                                child: DropdownButton(
+                                                                    isExpanded: true,
+                                                                    value: bedroomValue,
+                                                                    onChanged: (
+                                                                        newValue) {
+                                                                        setState(() {
+                                                                            bedroomValue =
+                                                                                newValue;
+                                                                        });
+                                                                    },
+                                                                    items: numbers
+                                                                        .map((
+                                                                        type) {
+                                                                        return DropdownMenuItem(
+                                                                            child: new Text(
+                                                                                type),
+                                                                            value: type,
+                                                                        );
+                                                                    }).toList(),
+                                                                ),
+                                                            ),
+                                                            Padding(
+                                                                padding: EdgeInsets
+                                                                    .symmetric(
+                                                                    horizontal: 20,
+                                                                    vertical: 10
+                                                                ),
+                                                                child: DropdownButton(
+                                                                    isExpanded: true,
+                                                                    value: bathroomValue,
+                                                                    onChanged: (
+                                                                        newValue) {
+                                                                        setState(() {
+                                                                            bathroomValue =
+                                                                                newValue;
+                                                                        });
+                                                                    },
+                                                                    items: numbers
+                                                                        .map((
+                                                                        type) {
+                                                                        return DropdownMenuItem(
+                                                                            child: new Text(
+                                                                                type),
+                                                                            value: type,
+                                                                        );
+                                                                    }).toList(),
+                                                                ),
+                                                            ),
+                                                        ],
+                                                    )
+                                                ),
+                                                Column(
                                                     mainAxisSize: MainAxisSize
                                                         .min,
                                                     children: <Widget>[
-                                                        Text(
-                                                            "¿Qué estás buscando?",
-                                                            style: TextStyle(
-                                                                fontSize: 24,
-                                                                fontWeight: FontWeight
-                                                                    .bold
-                                                            ),
-                                                            textAlign: TextAlign
-                                                                .center,
+                                                        Divider(
+                                                            color: Colors
+                                                                .black26,
+                                                            height: 1,
                                                         ),
-                                                        Padding(
-                                                            padding: EdgeInsets
-                                                                .only(
-                                                                top: 20),
-                                                            child: Divider(
-                                                                color: Colors
-                                                                    .black26,
-                                                                height: 1,
-                                                            ),
-                                                        )
-                                                    ],
-                                                ),
-                                            ),
-                                            Expanded(
-                                                child: Padding(
-                                                    padding: EdgeInsets
-                                                        .symmetric(
-                                                        horizontal: 20),
-                                                    child: ListView(
-                                                        children: <Widget>[
-                                                            TextFormField(
-                                                                decoration: InputDecoration(
-                                                                    labelText: "Precio mínimo",
-                                                                    errorMaxLines: 3,
-                                                                    prefixText: "\$ ",
-                                                                    prefixStyle: TextStyle(
-                                                                        fontWeight: FontWeight
-                                                                            .bold
-                                                                    ),
-                                                                    suffixText: " CUC",
-                                                                    suffixStyle: TextStyle(
-                                                                        fontWeight: FontWeight
-                                                                            .bold
-                                                                    )
-                                                                ),
-                                                                keyboardType: TextInputType
-                                                                    .number,
-                                                                controller: minPriceController,
-                                                                validator: (
-                                                                    value) {
-                                                                    if (value
-                                                                        .isNotEmpty &&
-                                                                        maxPriceController
-                                                                            .text
-                                                                            .isNotEmpty &&
-                                                                        int
-                                                                            .parse(
-                                                                            maxPriceController
-                                                                                .text) <
-                                                                            int
-                                                                                .parse(
-                                                                                value)) {
-                                                                        return "El precio mínimo debe ser menor o igual que el precio máximo";
-                                                                    }
-                                                                    return null;
-                                                                }
-                                                            ),
-                                                            TextFormField(
-                                                                decoration: InputDecoration(
-                                                                    labelText: "Precio máximo",
-                                                                    errorMaxLines: 3,
-                                                                    prefixText: "\$ ",
-                                                                    prefixStyle: TextStyle(
-                                                                        fontWeight: FontWeight
-                                                                            .bold
-                                                                    ),
-                                                                    suffixText: " CUC",
-                                                                    suffixStyle: TextStyle(
-                                                                        fontWeight: FontWeight
-                                                                            .bold
-                                                                    )
-                                                                ),
-                                                                keyboardType: TextInputType
-                                                                    .number,
-                                                                controller: maxPriceController,
-                                                                validator: (
-                                                                    value) {
-                                                                    if (value
-                                                                        .isNotEmpty &&
-                                                                        minPriceController
-                                                                            .text
-                                                                            .isNotEmpty &&
-                                                                        int
-                                                                            .parse(
-                                                                            minPriceController
-                                                                                .text) >
-                                                                            int
-                                                                                .parse(
-                                                                                value)) {
-                                                                        return "El precio máximo debe ser mayor o igual que el precio mínimo";
-                                                                    }
-                                                                    return null;
-                                                                }
-                                                            )
-                                                        ],
-                                                    )
-                                                )
-                                            ),
-                                            Column(
-                                                mainAxisSize: MainAxisSize
-                                                    .min,
-                                                children: <Widget>[
-                                                    Divider(
-                                                        color: Colors
-                                                            .black26,
-                                                        height: 1,
-                                                    ),
-                                                    Row(
-                                                        mainAxisSize: MainAxisSize
-                                                            .max,
-                                                        children: <
-                                                            Widget>[
-                                                            Expanded(
-                                                                child: MaterialButton(
-                                                                    child: Text(
-                                                                        "Cerrar"),
-                                                                    onPressed: () {
-                                                                        close();
-                                                                        Navigator
-                                                                            .of(
-                                                                            context)
-                                                                            .pop();
-                                                                    },
-                                                                    elevation: 0,
-                                                                    focusElevation: 0,
-                                                                    hoverElevation: 0,
-                                                                    highlightElevation: 0,
-                                                                    disabledElevation: 0,
-                                                                    padding: EdgeInsets
-                                                                        .all(
-                                                                        20),
-                                                                ),
-                                                            ),
-                                                            Expanded(
-                                                                child: MaterialButton(
-                                                                    child: Text(
-                                                                        "Buscar"),
-                                                                    onPressed: () {
-                                                                        if (_formKey
-                                                                            .currentState
-                                                                            .validate()) {
-                                                                            search();
+                                                        Row(
+                                                            mainAxisSize: MainAxisSize
+                                                                .max,
+                                                            children: <
+                                                                Widget>[
+                                                                Expanded(
+                                                                    child: MaterialButton(
+                                                                        child: Text(
+                                                                            "Cerrar"),
+                                                                        onPressed: () {
+                                                                            close();
                                                                             Navigator
                                                                                 .of(
                                                                                 context)
                                                                                 .pop();
-                                                                        }
-                                                                    },
-                                                                    elevation: 0,
-                                                                    focusElevation: 0,
-                                                                    hoverElevation: 0,
-                                                                    highlightElevation: 0,
-                                                                    disabledElevation: 0,
-                                                                    textColor: Colors
-                                                                        .blue,
-                                                                    padding: EdgeInsets
-                                                                        .all(
-                                                                        20),
+                                                                        },
+                                                                        elevation: 0,
+                                                                        focusElevation: 0,
+                                                                        hoverElevation: 0,
+                                                                        highlightElevation: 0,
+                                                                        disabledElevation: 0,
+                                                                        padding: EdgeInsets
+                                                                            .all(
+                                                                            20),
+                                                                    ),
                                                                 ),
-                                                            )
-                                                        ],
-                                                    )
-                                                ],
-                                            )
-                                        ],
-                                    )
-                                )
+                                                                Expanded(
+                                                                    child: MaterialButton(
+                                                                        child: Text(
+                                                                            "Buscar"),
+                                                                        onPressed: () {
+                                                                            if (_formKey
+                                                                                .currentState
+                                                                                .validate()) {
+                                                                                search();
+                                                                                Navigator
+                                                                                    .of(
+                                                                                    context)
+                                                                                    .pop();
+                                                                            }
+                                                                        },
+                                                                        elevation: 0,
+                                                                        focusElevation: 0,
+                                                                        hoverElevation: 0,
+                                                                        highlightElevation: 0,
+                                                                        disabledElevation: 0,
+                                                                        textColor: Colors
+                                                                            .blue,
+                                                                        padding: EdgeInsets
+                                                                            .all(
+                                                                            20),
+                                                                    ),
+                                                                )
+                                                            ],
+                                                        )
+                                                    ],
+                                                )
+                                            ],
+                                        )
+                                    );
+                                }
                             ),
                         ),
-                    )
+                    ),
                 );
             }
         );
     }
     
     void close() {
-        this.typeValue = this.type;
-        this.minPriceController.text =
-        (this.minPrice != null) ? this.minPrice.toString() : "";
-        this.maxPriceController.text =
-        (this.maxPrice != null) ? this.maxPrice.toString() : "";
+//        this.provinceValue =
+//        (this.province != null) ? this.province : "--Cualquiera--";
+//        this.typeValue =
+//        (this.type != null) ? this.type : "--Cualquiera--";
+//        this.minPriceController.text =
+//        (this.minPrice != null) ? this.minPrice.toString() : "";
+//        this.maxPriceController.text =
+//        (this.maxPrice != null) ? this.maxPrice.toString() : "";
+//        this.bedroomValue =
+//        (this.bedrooms != null) ? this.bedrooms.toString() : "--Cualquiera--";
+//        this.bathroomValue =
+//        (this.bathrooms != null) ? this.bathrooms.toString() : "--Cualquiera--";
     }
     
     void search() {
         setState(() {
-            this.type = this.typeValue;
+            if (this.provinceValue == "--Cualquiera--") {
+                this.province = null;
+            } else {
+                this.province = this.provinceValue;
+            }
+            if (this.provinceValue == "--Cualquiera--") {
+                this.province = null;
+            } else {
+                this.province = this.provinceValue;
+            }
+            if (this.typeValue == "--Cualquiera--") {
+                this.type = null;
+            } else {
+                this.type = this.typeValue;
+            }
             if (this.minPriceController.text.isNotEmpty) {
                 this.minPrice = int.parse(this.minPriceController.text);
             } else {
@@ -506,6 +714,16 @@ class HomeState extends State<Home> {
                 this.maxPrice = int.parse(this.maxPriceController.text);
             } else {
                 this.maxPrice = null;
+            }
+            if (this.bedroomValue == "--Cualquiera--") {
+                this.bedrooms = null;
+            } else {
+                this.bedrooms = int.parse(this.bedroomValue);
+            }
+            if (this.bathroomValue == "--Cualquiera--") {
+                this.bathrooms = null;
+            } else {
+                this.bathrooms = int.parse(this.bathroomValue);
             }
         });
     }
