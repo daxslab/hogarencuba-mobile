@@ -21,11 +21,36 @@ class Home extends StatefulWidget {
 
 class HomeState extends State<Home> {
     
+    final _formKey = GlobalKey<FormState>();
     final LocalStorage storage = LocalStorage('dataStorage');
+    
+    final List<String> types = [
+        "--Cualquiera--",
+        "Casa",
+        "Apartamento",
+        "Terreno"
+    ];
+    
+    String typeValue = "One";
+    final minPriceController = TextEditingController();
+    final maxPriceController = TextEditingController();
+    
+    String province;
+    String city;
+    String type;
+    int minPrice;
+    int maxPrice;
+    int bedrooms;
+    int bathrooms;
+    
+    bool visibilityFilter;
     
     @override
     void initState() {
         super.initState();
+        setState(() {
+            this.visibilityFilter = true;
+        });
         blocs.homes();
     }
     
@@ -50,11 +75,6 @@ class HomeState extends State<Home> {
                 ),
                 actions: <Widget>[
                     IconButton(
-                        icon: Icon(Icons.filter_list),
-                        onPressed: () {
-                        
-                        }),
-                    IconButton(
                         icon: Icon(Icons.info_outline),
                         onPressed: () {
                             Navigator.of(context).push(
@@ -66,6 +86,12 @@ class HomeState extends State<Home> {
                         })
                 ],
             
+            ),
+            floatingActionButton: FloatingActionButton(
+                onPressed: () {
+                    showFormToSearch();
+                },
+                child: Icon(Icons.filter_list),
             ),
             body: Container(
                 color: Colors.white,
@@ -101,13 +127,51 @@ class HomeState extends State<Home> {
                                         HomeEntity.fromJson(i))
                                         .toList();
                                     
-                                    return ListView.builder(
-                                        itemCount: homes.length,
-                                        itemBuilder: (context, index) {
-                                            return HomeCard(
-                                                data: homes[index]);
-                                        }
-                                    );
+                                    if (this.province != null) {
+                                        homes = homes.where((home) =>
+                                            home.location.trim()
+                                                .startsWith(
+                                                this.province))
+                                            .toList();
+                                    }
+                                    
+                                    if (this.city != null) {
+                                        homes = homes.where((home) =>
+                                            home.location.trim()
+                                                .endsWith(
+                                                this.city))
+                                            .toList();
+                                    }
+                                    
+                                    if (this.type != null) {
+                                        homes = homes.where((home) =>
+                                        home.type.trim() ==
+                                            this.type).toList();
+                                    }
+                                    
+                                    if (this.minPrice != null) {
+                                        homes = homes.where((home) =>
+                                        home.price >=
+                                            this.minPrice).toList();
+                                    }
+                                    
+                                    if (this.maxPrice != null) {
+                                        homes = homes.where((home) =>
+                                        home.price <=
+                                            this.maxPrice).toList();
+                                    }
+                                    
+                                    if (homes.isNotEmpty) {
+                                        return ListView.builder(
+                                            itemCount: homes.length,
+                                            itemBuilder: (context, index) {
+                                                return HomeCard(
+                                                    data: homes[index]);
+                                            }
+                                        );
+                                    } else {
+                                        return NoProperties();
+                                    }
                                 } else if (snapshot.hasError) {
                                     return FutureBuilder(
                                         future: storage.ready,
@@ -124,23 +188,63 @@ class HomeState extends State<Home> {
                                                         HomeEntity.fromJson(i))
                                                         .toList();
                                                     
-                                                    return ListView.builder(
-                                                        itemCount: homes.length,
-                                                        itemBuilder: (context,
-                                                            index) {
-                                                            return HomeCard(
-                                                                data: homes[index]);
-                                                        }
-                                                    );
+                                                    if (this.province != null) {
+                                                        homes = homes.where((
+                                                            home) =>
+                                                            home.location.trim()
+                                                                .startsWith(
+                                                                this.province))
+                                                            .toList();
+                                                    }
+                                                    
+                                                    if (this.city != null) {
+                                                        homes = homes.where((
+                                                            home) =>
+                                                            home.location.trim()
+                                                                .endsWith(
+                                                                this.city))
+                                                            .toList();
+                                                    }
+                                                    
+                                                    if (this.type != null) {
+                                                        homes = homes.where((
+                                                            home) =>
+                                                        home.type.trim() ==
+                                                            this.type).toList();
+                                                    }
+                                                    
+                                                    if (this.minPrice != null) {
+                                                        homes = homes.where((
+                                                            home) =>
+                                                        home.price >=
+                                                            this.minPrice)
+                                                            .toList();
+                                                    }
+                                                    
+                                                    if (this.maxPrice != null) {
+                                                        homes = homes.where((
+                                                            home) =>
+                                                        home.price <=
+                                                            this.maxPrice)
+                                                            .toList();
+                                                    }
+                                                    
+                                                    if (homes.isNotEmpty) {
+                                                        return ListView.builder(
+                                                            itemCount: homes
+                                                                .length,
+                                                            itemBuilder: (
+                                                                context,
+                                                                index) {
+                                                                return HomeCard(
+                                                                    data: homes[index]);
+                                                            }
+                                                        );
+                                                    } else {
+                                                        return NoProperties();
+                                                    }
                                                 } else {
-                                                    return Container(
-                                                        padding: EdgeInsets.all(
-                                                            30),
-                                                        child: Center(
-                                                            child: Text(
-                                                                "No hay datos para mostrar."),
-                                                        ),
-                                                    );
+                                                    return NoProperties();
                                                 }
                                             } else {
                                                 return Center(
@@ -159,6 +263,266 @@ class HomeState extends State<Home> {
                     ],
                 )
             )
+        );
+    }
+    
+    void showFormToSearch() {
+        showGeneralDialog(
+            context: context,
+            barrierColor: Colors.black12.withOpacity(0.6),
+            barrierDismissible: false,
+            transitionDuration: Duration(milliseconds: 300),
+            pageBuilder: (BuildContext context, __, ___) {
+                return GestureDetector(
+                    onTap: () {
+                        FocusScope.of(context).requestFocus(FocusNode());
+                    },
+                    child: SizedBox.expand(
+                        child: Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 20,
+                                vertical: 30
+                            ),
+                            child: Material(
+                                borderRadius: BorderRadius.circular(4),
+                                color: Colors.white,
+                                child: Form(
+                                    key: _formKey,
+                                    child: Column(
+                                        mainAxisSize: MainAxisSize.max,
+                                        mainAxisAlignment: MainAxisAlignment
+                                            .spaceBetween,
+                                        children: <Widget>[
+                                            Padding(
+                                                padding: EdgeInsets.only(
+                                                    top: 20
+                                                ),
+                                                child: Column(
+                                                    mainAxisSize: MainAxisSize
+                                                        .min,
+                                                    children: <Widget>[
+                                                        Text(
+                                                            "¿Qué estás buscando?",
+                                                            style: TextStyle(
+                                                                fontSize: 24,
+                                                                fontWeight: FontWeight
+                                                                    .bold
+                                                            ),
+                                                            textAlign: TextAlign
+                                                                .center,
+                                                        ),
+                                                        Padding(
+                                                            padding: EdgeInsets
+                                                                .only(
+                                                                top: 20),
+                                                            child: Divider(
+                                                                color: Colors
+                                                                    .black26,
+                                                                height: 1,
+                                                            ),
+                                                        )
+                                                    ],
+                                                ),
+                                            ),
+                                            Expanded(
+                                                child: Padding(
+                                                    padding: EdgeInsets
+                                                        .symmetric(
+                                                        horizontal: 20),
+                                                    child: ListView(
+                                                        children: <Widget>[
+                                                            TextFormField(
+                                                                decoration: InputDecoration(
+                                                                    labelText: "Precio mínimo",
+                                                                    errorMaxLines: 3,
+                                                                    prefixText: "\$ ",
+                                                                    prefixStyle: TextStyle(
+                                                                        fontWeight: FontWeight
+                                                                            .bold
+                                                                    ),
+                                                                    suffixText: " CUC",
+                                                                    suffixStyle: TextStyle(
+                                                                        fontWeight: FontWeight
+                                                                            .bold
+                                                                    )
+                                                                ),
+                                                                keyboardType: TextInputType
+                                                                    .number,
+                                                                controller: minPriceController,
+                                                                validator: (
+                                                                    value) {
+                                                                    if (value
+                                                                        .isNotEmpty &&
+                                                                        maxPriceController
+                                                                            .text
+                                                                            .isNotEmpty &&
+                                                                        int
+                                                                            .parse(
+                                                                            maxPriceController
+                                                                                .text) <
+                                                                            int
+                                                                                .parse(
+                                                                                value)) {
+                                                                        return "El precio mínimo debe ser menor o igual que el precio máximo";
+                                                                    }
+                                                                    return null;
+                                                                }
+                                                            ),
+                                                            TextFormField(
+                                                                decoration: InputDecoration(
+                                                                    labelText: "Precio máximo",
+                                                                    errorMaxLines: 3,
+                                                                    prefixText: "\$ ",
+                                                                    prefixStyle: TextStyle(
+                                                                        fontWeight: FontWeight
+                                                                            .bold
+                                                                    ),
+                                                                    suffixText: " CUC",
+                                                                    suffixStyle: TextStyle(
+                                                                        fontWeight: FontWeight
+                                                                            .bold
+                                                                    )
+                                                                ),
+                                                                keyboardType: TextInputType
+                                                                    .number,
+                                                                controller: maxPriceController,
+                                                                validator: (
+                                                                    value) {
+                                                                    if (value
+                                                                        .isNotEmpty &&
+                                                                        minPriceController
+                                                                            .text
+                                                                            .isNotEmpty &&
+                                                                        int
+                                                                            .parse(
+                                                                            minPriceController
+                                                                                .text) >
+                                                                            int
+                                                                                .parse(
+                                                                                value)) {
+                                                                        return "El precio máximo debe ser mayor o igual que el precio mínimo";
+                                                                    }
+                                                                    return null;
+                                                                }
+                                                            )
+                                                        ],
+                                                    )
+                                                )
+                                            ),
+                                            Column(
+                                                mainAxisSize: MainAxisSize
+                                                    .min,
+                                                children: <Widget>[
+                                                    Divider(
+                                                        color: Colors
+                                                            .black26,
+                                                        height: 1,
+                                                    ),
+                                                    Row(
+                                                        mainAxisSize: MainAxisSize
+                                                            .max,
+                                                        children: <
+                                                            Widget>[
+                                                            Expanded(
+                                                                child: MaterialButton(
+                                                                    child: Text(
+                                                                        "Cerrar"),
+                                                                    onPressed: () {
+                                                                        close();
+                                                                        Navigator
+                                                                            .of(
+                                                                            context)
+                                                                            .pop();
+                                                                    },
+                                                                    elevation: 0,
+                                                                    focusElevation: 0,
+                                                                    hoverElevation: 0,
+                                                                    highlightElevation: 0,
+                                                                    disabledElevation: 0,
+                                                                    padding: EdgeInsets
+                                                                        .all(
+                                                                        20),
+                                                                ),
+                                                            ),
+                                                            Expanded(
+                                                                child: MaterialButton(
+                                                                    child: Text(
+                                                                        "Buscar"),
+                                                                    onPressed: () {
+                                                                        if (_formKey
+                                                                            .currentState
+                                                                            .validate()) {
+                                                                            search();
+                                                                            Navigator
+                                                                                .of(
+                                                                                context)
+                                                                                .pop();
+                                                                        }
+                                                                    },
+                                                                    elevation: 0,
+                                                                    focusElevation: 0,
+                                                                    hoverElevation: 0,
+                                                                    highlightElevation: 0,
+                                                                    disabledElevation: 0,
+                                                                    textColor: Colors
+                                                                        .blue,
+                                                                    padding: EdgeInsets
+                                                                        .all(
+                                                                        20),
+                                                                ),
+                                                            )
+                                                        ],
+                                                    )
+                                                ],
+                                            )
+                                        ],
+                                    )
+                                )
+                            ),
+                        ),
+                    )
+                );
+            }
+        );
+    }
+    
+    void close() {
+        this.typeValue = this.type;
+        this.minPriceController.text =
+        (this.minPrice != null) ? this.minPrice.toString() : "";
+        this.maxPriceController.text =
+        (this.maxPrice != null) ? this.maxPrice.toString() : "";
+    }
+    
+    void search() {
+        setState(() {
+            this.type = this.typeValue;
+            if (this.minPriceController.text.isNotEmpty) {
+                this.minPrice = int.parse(this.minPriceController.text);
+            } else {
+                this.minPrice = null;
+            }
+            if (this.maxPriceController.text.isNotEmpty) {
+                this.maxPrice = int.parse(this.maxPriceController.text);
+            } else {
+                this.maxPrice = null;
+            }
+        });
+    }
+}
+
+class NoProperties extends StatelessWidget {
+    
+    @override
+    Widget build(BuildContext context) {
+        return Container(
+            padding: EdgeInsets
+                .all(
+                30),
+            child: Center(
+                child: Text(
+                    "No hay propiedades para mostrar."),
+            ),
         );
     }
 }
