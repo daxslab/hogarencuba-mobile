@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hogarencuba/src/model/home.dart';
 import 'package:hogarencuba/src/util/colors.dart';
+import 'package:hogarencuba/src/widget/modal.dart';
 import 'package:localstorage/localstorage.dart';
 
 import '../api/blocs.dart';
@@ -572,12 +573,9 @@ class HomeState extends State<Home> {
                         onTap: () {
                             FocusScope.of(context).requestFocus(FocusNode());
                         },
-                        child: Padding(
-                            padding: EdgeInsets.all(20),
-                            child: Material(
-                                borderRadius: BorderRadius.circular(4),
-                                color: Colors.white,
-                                child: StatefulBuilder(
+                        child: Modal(
+                            child: Scaffold(
+                                body: StatefulBuilder(
                                     builder: (BuildContext context,
                                         StateSetter setState) {
                                         return Form(
@@ -591,13 +589,6 @@ class HomeState extends State<Home> {
                                                         decoration: BoxDecoration(
                                                             color: Color(
                                                                 0xFFDC3545),
-                                                            borderRadius: BorderRadius
-                                                                .only(
-                                                                topLeft: Radius
-                                                                    .circular(4),
-                                                                topRight: Radius
-                                                                    .circular(4),
-                                                            )
                                                         ),
                                                         padding: EdgeInsets.only(
                                                             top: 20

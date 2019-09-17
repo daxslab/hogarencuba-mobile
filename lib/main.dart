@@ -15,7 +15,7 @@ class HogarEnCuba extends StatelessWidget {
             theme: ThemeData(
                 primaryColor: Color(0xFF0069D9),
                 errorColor: Color(0xFFDC3545),
-                accentColor: Color(0xFF0069D9)
+                accentColor: Color(0xFF007BFF)
             ),
             home: Splash(),
         );
