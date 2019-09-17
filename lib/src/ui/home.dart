@@ -24,6 +24,223 @@ class HomeState extends State<Home> {
     final _formKey = GlobalKey<FormState>();
     final LocalStorage storage = LocalStorage('dataStorage');
     
+    final Map<String, dynamic> location = {
+        "Pinar del Río": [
+            "--Cualquiera--",
+            "Consolación del Sur",
+            "Guane",
+            "La Palma",
+            "Mantua",
+            "Minas de Matahambre",
+            "Pinar del Río",
+            "San Juan y Martínez",
+            "San Luis",
+            "Sandino",
+            "Viñales",
+            "Los Palacios"
+        ],
+        "Artemisa": [
+            "--Cualquiera--",
+            "Mariel",
+            "Guanajay",
+            "Caimito",
+            "Bauta",
+            "San Antonio de los Baños",
+            "Güira de Melena",
+            "Alquízar",
+            "Artemisa",
+            "Bahía Honda",
+            "Candelaria",
+            "San Cristóbal"
+        ],
+        "La Habana": [
+            "--Cualquiera--",
+            "La Lisa",
+            "Playa",
+            "Arroyo Naranjo",
+            "Boyeros",
+            "Centro Habana",
+            "Cerro",
+            "Cotorro",
+            "Diez de Octubre",
+            "Guanabacoa",
+            "La Habana del Este",
+            "La Habana Vieja",
+            "Marianao",
+            "Plaza de la Revolución",
+            "Regla",
+            "San Miguel del Padrón"
+        ],
+        "Mayabeque": [
+            "--Cualquiera--",
+            "Jaruco",
+            "Santa Cruz del Norte",
+            "Madruga",
+            "Nueva Paz",
+            "San Nicolás de Bari",
+            "Güines",
+            "Melena del Sur",
+            "Batabanó",
+            "Quivicán"
+        ],
+        "Matanzas": [
+            "--Cualquiera--",
+            "Calimete",
+            "Cárdenas",
+            "Ciénaga de Zapata",
+            "Colón",
+            "Jagüey Grande",
+            "Jovellanos",
+            "Limonar",
+            "Los Arabos",
+            "Martí",
+            "Matanzas",
+            "Pedro Betancourt",
+            "Perico",
+            "Unión de Reyes"
+        ],
+        "Villa Clara": [
+            "--Cualquiera--",
+            "Caibarién",
+            "Camajuaní",
+            "Cifuentes",
+            "Corralillo",
+            "Encrucijada",
+            "Manicaragua",
+            "Placetas",
+            "Quemado de Güines",
+            "Ranchuelos",
+            "Remedios",
+            "Sagüa la Grande",
+            "Santa Clara",
+            "Santo Domingo"
+        ],
+        "Cienfuegos": [
+            "--Cualquiera--",
+            "Cienfuegos",
+            "Cruces",
+            "Palmira",
+            "Rodas",
+            "Abreus",
+            "Aguada de pasajeros",
+            "Cumanayagüa",
+            "Lajas"
+        ],
+        "Sancti Spiritus": [
+            "--Cualquiera--",
+            "Sancti Spíritus",
+            "Trinidad",
+            "Cabaiguán",
+            "Yaguajay",
+            "Jatibonico",
+            "Taguasco",
+            "Fomento",
+            "La Sierpe"
+        ],
+        "Ciego de Ávila": [
+            "--Cualquiera--",
+            "Ciego de Ávila",
+            "Morón",
+            "Chambas",
+            "Ciro Redondo",
+            "Majagua",
+            "Florencia",
+            "Venezuela",
+            "Baraguá",
+            "Primero de Enero",
+            "Bolivia"
+        ],
+        "Camagüey": [
+            "--Cualquiera--",
+            "Camagüey",
+            "Guáimaro",
+            "Nuevitas",
+            "Céspedes",
+            "Jimaguayú",
+            "Sibanicú",
+            "Esmeralda",
+            "Minas",
+            "Sierra de Cubitas",
+            "Florida",
+            "Najasa",
+            "Vertientes",
+            "Santa Cruz del Sur"
+        ],
+        "Las Tunas": [
+            "--Cualquiera--",
+            "Manatí",
+            "Puerto Padre",
+            "Jesús Menéndez",
+            "Majibacoa",
+            "Las Tunas",
+            "Jobabo",
+            "Colombia",
+            "Amancio"
+        ],
+        "Granma": [
+            "--Cualquiera--",
+            "Bartolomé Masó",
+            "Bayamo",
+            "Buey Arriba",
+            "Campechuela",
+            "Cauto Cristo",
+            "Guisa",
+            "Jiguaní",
+            "Manzanillo",
+            "Media Luna",
+            "Niquero",
+            "Pilón",
+            "Río Cauto",
+            "Yara"
+        ],
+        "Holguín": [
+            "--Cualquiera--",
+            "Antilla",
+            "Báguanos",
+            "Banes",
+            "Cacocum",
+            "Calixto García",
+            "Cueto",
+            "Frank País",
+            "Gibara",
+            "Holguín",
+            "Mayarí",
+            "Moa",
+            "Rafael Freyre",
+            "Sagüa de Tánamo",
+            "Urbano Noris"
+        ],
+        "Santiago de Cuba": [
+            "--Cualquiera--",
+            "Contramaestre",
+            "Guamá",
+            "Mella",
+            "Palma Soriano",
+            "San Luis",
+            "Santiago de Cuba",
+            "Segundo Frente",
+            "Songo-La Maya",
+            "Tercer Frente"
+        ],
+        "Guantánamo": [
+            "--Cualquiera--",
+            "Baracoa",
+            "Caimanera",
+            "El Salvador",
+            "Guantánamo",
+            "Imías",
+            "Maisí",
+            "Manuel Tames",
+            "Niceto Pérez",
+            "San Antonio del Sur",
+            "Yateras"
+        ],
+        "Isla de la Juventud": [
+            "--Cualquiera--",
+            "Nueva gerona"
+        ]
+    };
+    
     final List<String> numbers = [
         "--Cualquiera--",
         "0",
@@ -58,6 +275,10 @@ class HomeState extends State<Home> {
         "Isla de la Juventud",
     ];
     
+    List<String> cities = [
+        "--Cualquiera--"
+    ];
+    
     final List<String> types = [
         "--Cualquiera--",
         "Casa",
@@ -66,6 +287,7 @@ class HomeState extends State<Home> {
     ];
     
     String provinceValue = "--Cualquiera--";
+    String cityValue = "--Cualquiera--";
     String typeValue = "--Cualquiera--";
     final minPriceController = TextEditingController();
     final maxPriceController = TextEditingController();
@@ -363,10 +585,14 @@ class HomeState extends State<Home> {
                                             children: <Widget>[
                                                 Container(
                                                     decoration: BoxDecoration(
-                                                        color: Color(0xFFDC3545),
-                                                        borderRadius: BorderRadius.only(
-                                                            topLeft: Radius.circular(4),
-                                                            topRight: Radius.circular(4),
+                                                        color: Color(
+                                                            0xFFDC3545),
+                                                        borderRadius: BorderRadius
+                                                            .only(
+                                                            topLeft: Radius
+                                                                .circular(4),
+                                                            topRight: Radius
+                                                                .circular(4),
                                                         )
                                                     ),
                                                     padding: EdgeInsets.only(
@@ -382,7 +608,8 @@ class HomeState extends State<Home> {
                                                                     fontSize: 24,
                                                                     fontWeight: FontWeight
                                                                         .bold,
-                                                                    color: Colors.white
+                                                                    color: Colors
+                                                                        .white
                                                                 ),
                                                                 textAlign: TextAlign
                                                                     .center,
@@ -419,7 +646,8 @@ class HomeState extends State<Home> {
                                                                         Text(
                                                                             "Provincia",
                                                                             style: TextStyle(
-                                                                                color: Color(0xFF0069D9),
+                                                                                color: Color(
+                                                                                    0xFF0069D9),
                                                                                 fontSize: 12
                                                                             ),
                                                                         ),
@@ -431,6 +659,14 @@ class HomeState extends State<Home> {
                                                                                 setState(() {
                                                                                     provinceValue =
                                                                                         newValue;
+                                                                                    cityValue =
+                                                                                    "--Cualquiera--";
+                                                                                    if (newValue !=
+                                                                                        "--Cualquiera--") {
+                                                                                        cities =
+                                                                                        location[newValue] as List<
+                                                                                            String>;
+                                                                                    }
                                                                                 });
                                                                             },
                                                                             items: privinces
@@ -461,9 +697,55 @@ class HomeState extends State<Home> {
                                                                     children: <
                                                                         Widget>[
                                                                         Text(
+                                                                            "Municipio",
+                                                                            style: TextStyle(
+                                                                                color: Color(
+                                                                                    0xFF0069D9),
+                                                                                fontSize: 12
+                                                                            ),
+                                                                        ),
+                                                                        DropdownButton(
+                                                                            isExpanded: true,
+                                                                            value: cityValue,
+                                                                            onChanged: (
+                                                                                newValue) {
+                                                                                setState(() {
+                                                                                    cityValue =
+                                                                                        newValue;
+                                                                                });
+                                                                            },
+                                                                            items: cities
+                                                                                .map((
+                                                                                type) {
+                                                                                return DropdownMenuItem(
+                                                                                    child: new Text(
+                                                                                        type),
+                                                                                    value: type,
+                                                                                );
+                                                                            })
+                                                                                .toList(),
+                                                                        )
+                                                                    ],
+                                                                )
+                                                            ),
+                                                            Padding(
+                                                                padding: EdgeInsets
+                                                                    .symmetric(
+                                                                    horizontal: 20,
+                                                                    vertical: 10
+                                                                ),
+                                                                child: Column(
+                                                                    mainAxisSize: MainAxisSize
+                                                                        .min,
+                                                                    crossAxisAlignment: CrossAxisAlignment
+                                                                        .start,
+                                                                    children: <
+                                                                        Widget>[
+                                                                        Text(
                                                                             "Tipo",
                                                                             style: TextStyle(
-                                                                                color: Color(0xFF0069D9),
+                                                                                color: Color(
+                                                                                    0xFF0069D9),
                                                                                 fontSize: 12
                                                                             ),
                                                                         ),
@@ -507,7 +789,8 @@ class HomeState extends State<Home> {
                                                                         Text(
                                                                             "Precio mínimo",
                                                                             style: TextStyle(
-                                                                                color: Color(0xFF0069D9),
+                                                                                color: Color(
+                                                                                    0xFF0069D9),
                                                                                 fontSize: 12
                                                                             ),
                                                                         ),
@@ -563,13 +846,17 @@ class HomeState extends State<Home> {
                                                                     vertical: 10
                                                                 ),
                                                                 child: Column(
-                                                                    mainAxisSize: MainAxisSize.min,
-                                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                                    children: <Widget>[
+                                                                    mainAxisSize: MainAxisSize
+                                                                        .min,
+                                                                    crossAxisAlignment: CrossAxisAlignment
+                                                                        .start,
+                                                                    children: <
+                                                                        Widget>[
                                                                         Text(
                                                                             "Precio máximo",
                                                                             style: TextStyle(
-                                                                                color: Color(0xFF0069D9),
+                                                                                color: Color(
+                                                                                    0xFF0069D9),
                                                                                 fontSize: 12
                                                                             ),
                                                                         ),
@@ -625,13 +912,17 @@ class HomeState extends State<Home> {
                                                                     vertical: 10
                                                                 ),
                                                                 child: Column(
-                                                                    mainAxisSize: MainAxisSize.min,
-                                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                                    children: <Widget>[
+                                                                    mainAxisSize: MainAxisSize
+                                                                        .min,
+                                                                    crossAxisAlignment: CrossAxisAlignment
+                                                                        .start,
+                                                                    children: <
+                                                                        Widget>[
                                                                         Text(
                                                                             "Cuartos",
                                                                             style: TextStyle(
-                                                                                color: Color(0xFF0069D9),
+                                                                                color: Color(
+                                                                                    0xFF0069D9),
                                                                                 fontSize: 12
                                                                             ),
                                                                         ),
@@ -653,7 +944,8 @@ class HomeState extends State<Home> {
                                                                                         type),
                                                                                     value: type,
                                                                                 );
-                                                                            }).toList(),
+                                                                            })
+                                                                                .toList(),
                                                                         )
                                                                     ],
                                                                 )
@@ -665,13 +957,17 @@ class HomeState extends State<Home> {
                                                                     vertical: 10
                                                                 ),
                                                                 child: Column(
-                                                                    mainAxisSize: MainAxisSize.min,
-                                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                                    children: <Widget>[
+                                                                    mainAxisSize: MainAxisSize
+                                                                        .min,
+                                                                    crossAxisAlignment: CrossAxisAlignment
+                                                                        .start,
+                                                                    children: <
+                                                                        Widget>[
                                                                         Text(
                                                                             "Baños",
                                                                             style: TextStyle(
-                                                                                color: Color(0xFF0069D9),
+                                                                                color: Color(
+                                                                                    0xFF0069D9),
                                                                                 fontSize: 12
                                                                             ),
                                                                         ),
@@ -693,7 +989,8 @@ class HomeState extends State<Home> {
                                                                                         type),
                                                                                     value: type,
                                                                                 );
-                                                                            }).toList(),
+                                                                            })
+                                                                                .toList(),
                                                                         )
                                                                     ],
                                                                 )
@@ -720,7 +1017,8 @@ class HomeState extends State<Home> {
                                                                         child: Text(
                                                                             "Cerrar",
                                                                             style: TextStyle(
-                                                                                color: Color(0xFFDC3545)
+                                                                                color: Color(
+                                                                                    0xFFDC3545)
                                                                             ),
                                                                         ),
                                                                         onPressed: () {
@@ -760,7 +1058,8 @@ class HomeState extends State<Home> {
                                                                         hoverElevation: 0,
                                                                         highlightElevation: 0,
                                                                         disabledElevation: 0,
-                                                                        textColor: Color(0xFF0069D9),
+                                                                        textColor: Color(
+                                                                            0xFF0069D9),
                                                                         padding: EdgeInsets
                                                                             .all(
                                                                             20),
@@ -804,10 +1103,10 @@ class HomeState extends State<Home> {
             } else {
                 this.province = this.provinceValue;
             }
-            if (this.provinceValue == "--Cualquiera--") {
-                this.province = null;
+            if (this.cityValue == "--Cualquiera--") {
+                this.city = null;
             } else {
-                this.province = this.provinceValue;
+                this.city = this.cityValue;
             }
             if (this.typeValue == "--Cualquiera--") {
                 this.type = null;
@@ -1018,8 +1317,9 @@ class HomeCard extends StatelessWidget {
                                                             right: 10),
                                                     ),
                                                     Text(
+                                                        data.bedroomsCount > 0 ?
                                                         data.bedroomsCount
-                                                            .toString(),
+                                                            .toString() : "?",
                                                         style: TextStyle(
                                                             color: Colors.white
                                                         ),
@@ -1040,8 +1340,12 @@ class HomeCard extends StatelessWidget {
                                                             right: 10),
                                                     ),
                                                     Text(
+                                                        data.bathroomsCount > 0
+                                                            ?
                                                         data.bathroomsCount
-                                                            .toString(),
+                                                            .toString()
+                                                            :
+                                                        "?",
                                                         style: TextStyle(
                                                             color: Colors.white
                                                         ),
