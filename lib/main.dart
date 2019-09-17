@@ -13,8 +13,8 @@ class HogarEnCuba extends StatelessWidget {
         return MaterialApp(
             debugShowCheckedModeBanner: false,
             theme: ThemeData(
-                primaryColor: Colors.blue,
-                errorColor: Colors.redAccent
+                primaryColor: Color(0xFF0069D9),
+                errorColor: Color(0xFFDC3545)
             ),
             home: Splash(),
         );

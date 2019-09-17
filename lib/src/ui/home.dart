@@ -47,7 +47,7 @@ class HomeState extends State<Home> {
         "Matanzas",
         "Villa Clara",
         "Cienfuegos",
-        "Sancti Spíritus",
+        "Sancti Spiritus",
         "Ciego de Ávila",
         "Camagüey",
         "Las Tunas",
@@ -129,6 +129,7 @@ class HomeState extends State<Home> {
                     showFormToSearch();
                 },
                 child: Icon(Icons.filter_list),
+                backgroundColor: Color(0xFF0069D9),
             ),
             body: Container(
                 color: Colors.white,
@@ -163,19 +164,17 @@ class HomeState extends State<Home> {
                                     List<HomeEntity> homes = list.map((i) =>
                                         HomeEntity.fromJson(i))
                                         .toList();
-
+                                    
                                     if (this.province != null) {
-                                        homes = homes.where((
-                                            home) =>
+                                        homes = homes.where((home) =>
                                             home.location.trim()
                                                 .endsWith(
                                                 this.province))
                                             .toList();
                                     }
-
+                                    
                                     if (this.city != null) {
-                                        homes = homes.where((
-                                            home) =>
+                                        homes = homes.where((home) =>
                                             home.location.trim()
                                                 .startsWith(
                                                 this.city))
@@ -362,7 +361,14 @@ class HomeState extends State<Home> {
                                             mainAxisAlignment: MainAxisAlignment
                                                 .spaceBetween,
                                             children: <Widget>[
-                                                Padding(
+                                                Container(
+                                                    decoration: BoxDecoration(
+                                                        color: Color(0xFFDC3545),
+                                                        borderRadius: BorderRadius.only(
+                                                            topLeft: Radius.circular(4),
+                                                            topRight: Radius.circular(4),
+                                                        )
+                                                    ),
                                                     padding: EdgeInsets.only(
                                                         top: 20
                                                     ),
@@ -375,7 +381,8 @@ class HomeState extends State<Home> {
                                                                 style: TextStyle(
                                                                     fontSize: 24,
                                                                     fontWeight: FontWeight
-                                                                        .bold
+                                                                        .bold,
+                                                                    color: Colors.white
                                                                 ),
                                                                 textAlign: TextAlign
                                                                     .center,
@@ -402,96 +409,42 @@ class HomeState extends State<Home> {
                                                                     horizontal: 20,
                                                                     vertical: 10
                                                                 ),
-                                                                child: DropdownButton(
-                                                                    isExpanded: true,
-                                                                    value: provinceValue,
-                                                                    onChanged: (
-                                                                        newValue) {
-                                                                        setState(() {
-                                                                            provinceValue =
-                                                                                newValue;
-                                                                        });
-                                                                    },
-                                                                    items: privinces
-                                                                        .map((
-                                                                        type) {
-                                                                        return DropdownMenuItem(
-                                                                            child: new Text(
-                                                                                type),
-                                                                            value: type,
-                                                                        );
-                                                                    }).toList(),
-                                                                ),
-                                                            ),
-                                                            Padding(
-                                                                padding: EdgeInsets
-                                                                    .symmetric(
-                                                                    horizontal: 20,
-                                                                    vertical: 10
-                                                                ),
-                                                                child: DropdownButton(
-                                                                    isExpanded: true,
-                                                                    value: typeValue,
-                                                                    onChanged: (
-                                                                        newValue) {
-                                                                        setState(() {
-                                                                            typeValue =
-                                                                                newValue;
-                                                                        });
-                                                                    },
-                                                                    items: types
-                                                                        .map((
-                                                                        type) {
-                                                                        return DropdownMenuItem(
-                                                                            child: new Text(
-                                                                                type),
-                                                                            value: type,
-                                                                        );
-                                                                    }).toList(),
-                                                                ),
-                                                            ),
-                                                            Padding(
-                                                                padding: EdgeInsets
-                                                                    .symmetric(
-                                                                    horizontal: 20,
-                                                                    vertical: 10
-                                                                ),
-                                                                child: TextFormField(
-                                                                    decoration: InputDecoration(
-                                                                        labelText: "Precio mínimo",
-                                                                        errorMaxLines: 3,
-                                                                        prefixText: "\$ ",
-                                                                        prefixStyle: TextStyle(
-                                                                            fontWeight: FontWeight
-                                                                                .bold
+                                                                child: Column(
+                                                                    mainAxisSize: MainAxisSize
+                                                                        .min,
+                                                                    crossAxisAlignment: CrossAxisAlignment
+                                                                        .start,
+                                                                    children: <
+                                                                        Widget>[
+                                                                        Text(
+                                                                            "Provincia",
+                                                                            style: TextStyle(
+                                                                                color: Color(0xFF0069D9),
+                                                                                fontSize: 12
+                                                                            ),
                                                                         ),
-                                                                        suffixText: " CUC",
-                                                                        suffixStyle: TextStyle(
-                                                                            fontWeight: FontWeight
-                                                                                .bold
+                                                                        DropdownButton(
+                                                                            isExpanded: true,
+                                                                            value: provinceValue,
+                                                                            onChanged: (
+                                                                                newValue) {
+                                                                                setState(() {
+                                                                                    provinceValue =
+                                                                                        newValue;
+                                                                                });
+                                                                            },
+                                                                            items: privinces
+                                                                                .map((
+                                                                                type) {
+                                                                                return DropdownMenuItem(
+                                                                                    child: new Text(
+                                                                                        type),
+                                                                                    value: type,
+                                                                                );
+                                                                            })
+                                                                                .toList(),
                                                                         )
-                                                                    ),
-                                                                    keyboardType: TextInputType
-                                                                        .number,
-                                                                    controller: minPriceController,
-                                                                    validator: (
-                                                                        value) {
-                                                                        if (value
-                                                                            .isNotEmpty &&
-                                                                            maxPriceController
-                                                                                .text
-                                                                                .isNotEmpty &&
-                                                                            int
-                                                                                .parse(
-                                                                                maxPriceController
-                                                                                    .text) <
-                                                                                int
-                                                                                    .parse(
-                                                                                    value)) {
-                                                                            return "El precio mínimo debe ser menor o igual que el precio máximo";
-                                                                        }
-                                                                        return null;
-                                                                    }
+                                                                    ],
                                                                 )
                                                             ),
                                                             Padding(
@@ -500,42 +453,42 @@ class HomeState extends State<Home> {
                                                                     horizontal: 20,
                                                                     vertical: 10
                                                                 ),
-                                                                child: TextFormField(
-                                                                    decoration: InputDecoration(
-                                                                        labelText: "Precio máximo",
-                                                                        errorMaxLines: 3,
-                                                                        prefixText: "\$ ",
-                                                                        prefixStyle: TextStyle(
-                                                                            fontWeight: FontWeight
-                                                                                .bold
+                                                                child: Column(
+                                                                    mainAxisSize: MainAxisSize
+                                                                        .min,
+                                                                    crossAxisAlignment: CrossAxisAlignment
+                                                                        .start,
+                                                                    children: <
+                                                                        Widget>[
+                                                                        Text(
+                                                                            "Tipo",
+                                                                            style: TextStyle(
+                                                                                color: Color(0xFF0069D9),
+                                                                                fontSize: 12
+                                                                            ),
                                                                         ),
-                                                                        suffixText: " CUC",
-                                                                        suffixStyle: TextStyle(
-                                                                            fontWeight: FontWeight
-                                                                                .bold
+                                                                        DropdownButton(
+                                                                            isExpanded: true,
+                                                                            value: typeValue,
+                                                                            onChanged: (
+                                                                                newValue) {
+                                                                                setState(() {
+                                                                                    typeValue =
+                                                                                        newValue;
+                                                                                });
+                                                                            },
+                                                                            items: types
+                                                                                .map((
+                                                                                type) {
+                                                                                return DropdownMenuItem(
+                                                                                    child: new Text(
+                                                                                        type),
+                                                                                    value: type,
+                                                                                );
+                                                                            })
+                                                                                .toList(),
                                                                         )
-                                                                    ),
-                                                                    keyboardType: TextInputType
-                                                                        .number,
-                                                                    controller: maxPriceController,
-                                                                    validator: (
-                                                                        value) {
-                                                                        if (value
-                                                                            .isNotEmpty &&
-                                                                            minPriceController
-                                                                                .text
-                                                                                .isNotEmpty &&
-                                                                            int
-                                                                                .parse(
-                                                                                minPriceController
-                                                                                    .text) >
-                                                                                int
-                                                                                    .parse(
-                                                                                    value)) {
-                                                                            return "El precio máximo debe ser mayor o igual que el precio mínimo";
-                                                                        }
-                                                                        return null;
-                                                                    }
+                                                                    ],
                                                                 )
                                                             ),
                                                             Padding(
@@ -544,26 +497,64 @@ class HomeState extends State<Home> {
                                                                     horizontal: 20,
                                                                     vertical: 10
                                                                 ),
-                                                                child: DropdownButton(
-                                                                    isExpanded: true,
-                                                                    value: bedroomValue,
-                                                                    onChanged: (
-                                                                        newValue) {
-                                                                        setState(() {
-                                                                            bedroomValue =
-                                                                                newValue;
-                                                                        });
-                                                                    },
-                                                                    items: numbers
-                                                                        .map((
-                                                                        type) {
-                                                                        return DropdownMenuItem(
-                                                                            child: new Text(
-                                                                                type),
-                                                                            value: type,
-                                                                        );
-                                                                    }).toList(),
-                                                                ),
+                                                                child: Column(
+                                                                    mainAxisSize: MainAxisSize
+                                                                        .min,
+                                                                    crossAxisAlignment: CrossAxisAlignment
+                                                                        .start,
+                                                                    children: <
+                                                                        Widget>[
+                                                                        Text(
+                                                                            "Precio mínimo",
+                                                                            style: TextStyle(
+                                                                                color: Color(0xFF0069D9),
+                                                                                fontSize: 12
+                                                                            ),
+                                                                        ),
+                                                                        TextFormField(
+                                                                            decoration: InputDecoration(
+                                                                                labelText: "--Cualquiera--",
+                                                                                contentPadding: EdgeInsets
+                                                                                    .only(
+                                                                                    top: 0,
+                                                                                    bottom: 5),
+                                                                                hasFloatingPlaceholder: false,
+                                                                                errorMaxLines: 3,
+                                                                                prefixText: "\$ ",
+                                                                                prefixStyle: TextStyle(
+                                                                                    fontWeight: FontWeight
+                                                                                        .bold
+                                                                                ),
+                                                                                suffixText: " CUC",
+                                                                                suffixStyle: TextStyle(
+                                                                                    fontWeight: FontWeight
+                                                                                        .bold
+                                                                                )
+                                                                            ),
+                                                                            keyboardType: TextInputType
+                                                                                .number,
+                                                                            controller: minPriceController,
+                                                                            validator: (
+                                                                                value) {
+                                                                                if (value
+                                                                                    .isNotEmpty &&
+                                                                                    maxPriceController
+                                                                                        .text
+                                                                                        .isNotEmpty &&
+                                                                                    int
+                                                                                        .parse(
+                                                                                        maxPriceController
+                                                                                            .text) <
+                                                                                        int
+                                                                                            .parse(
+                                                                                            value)) {
+                                                                                    return "El precio mínimo debe ser menor o igual que el precio máximo";
+                                                                                }
+                                                                                return null;
+                                                                            }
+                                                                        )
+                                                                    ],
+                                                                )
                                                             ),
                                                             Padding(
                                                                 padding: EdgeInsets
@@ -571,26 +562,141 @@ class HomeState extends State<Home> {
                                                                     horizontal: 20,
                                                                     vertical: 10
                                                                 ),
-                                                                child: DropdownButton(
-                                                                    isExpanded: true,
-                                                                    value: bathroomValue,
-                                                                    onChanged: (
-                                                                        newValue) {
-                                                                        setState(() {
-                                                                            bathroomValue =
-                                                                                newValue;
-                                                                        });
-                                                                    },
-                                                                    items: numbers
-                                                                        .map((
-                                                                        type) {
-                                                                        return DropdownMenuItem(
-                                                                            child: new Text(
-                                                                                type),
-                                                                            value: type,
-                                                                        );
-                                                                    }).toList(),
+                                                                child: Column(
+                                                                    mainAxisSize: MainAxisSize.min,
+                                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                                    children: <Widget>[
+                                                                        Text(
+                                                                            "Precio máximo",
+                                                                            style: TextStyle(
+                                                                                color: Color(0xFF0069D9),
+                                                                                fontSize: 12
+                                                                            ),
+                                                                        ),
+                                                                        TextFormField(
+                                                                            decoration: InputDecoration(
+                                                                                labelText: "--Cualquiera--",
+                                                                                contentPadding: EdgeInsets
+                                                                                    .only(
+                                                                                    top: 0,
+                                                                                    bottom: 5),
+                                                                                hasFloatingPlaceholder: false,
+                                                                                errorMaxLines: 3,
+                                                                                prefixText: "\$ ",
+                                                                                prefixStyle: TextStyle(
+                                                                                    fontWeight: FontWeight
+                                                                                        .bold
+                                                                                ),
+                                                                                suffixText: " CUC",
+                                                                                suffixStyle: TextStyle(
+                                                                                    fontWeight: FontWeight
+                                                                                        .bold
+                                                                                )
+                                                                            ),
+                                                                            keyboardType: TextInputType
+                                                                                .number,
+                                                                            controller: maxPriceController,
+                                                                            validator: (
+                                                                                value) {
+                                                                                if (value
+                                                                                    .isNotEmpty &&
+                                                                                    minPriceController
+                                                                                        .text
+                                                                                        .isNotEmpty &&
+                                                                                    int
+                                                                                        .parse(
+                                                                                        minPriceController
+                                                                                            .text) >
+                                                                                        int
+                                                                                            .parse(
+                                                                                            value)) {
+                                                                                    return "El precio máximo debe ser mayor o igual que el precio mínimo";
+                                                                                }
+                                                                                return null;
+                                                                            }
+                                                                        )
+                                                                    ],
+                                                                )
+                                                            ),
+                                                            Padding(
+                                                                padding: EdgeInsets
+                                                                    .symmetric(
+                                                                    horizontal: 20,
+                                                                    vertical: 10
                                                                 ),
+                                                                child: Column(
+                                                                    mainAxisSize: MainAxisSize.min,
+                                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                                    children: <Widget>[
+                                                                        Text(
+                                                                            "Cuartos",
+                                                                            style: TextStyle(
+                                                                                color: Color(0xFF0069D9),
+                                                                                fontSize: 12
+                                                                            ),
+                                                                        ),
+                                                                        DropdownButton(
+                                                                            isExpanded: true,
+                                                                            value: bedroomValue,
+                                                                            onChanged: (
+                                                                                newValue) {
+                                                                                setState(() {
+                                                                                    bedroomValue =
+                                                                                        newValue;
+                                                                                });
+                                                                            },
+                                                                            items: numbers
+                                                                                .map((
+                                                                                type) {
+                                                                                return DropdownMenuItem(
+                                                                                    child: new Text(
+                                                                                        type),
+                                                                                    value: type,
+                                                                                );
+                                                                            }).toList(),
+                                                                        )
+                                                                    ],
+                                                                )
+                                                            ),
+                                                            Padding(
+                                                                padding: EdgeInsets
+                                                                    .symmetric(
+                                                                    horizontal: 20,
+                                                                    vertical: 10
+                                                                ),
+                                                                child: Column(
+                                                                    mainAxisSize: MainAxisSize.min,
+                                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                                    children: <Widget>[
+                                                                        Text(
+                                                                            "Baños",
+                                                                            style: TextStyle(
+                                                                                color: Color(0xFF0069D9),
+                                                                                fontSize: 12
+                                                                            ),
+                                                                        ),
+                                                                        DropdownButton(
+                                                                            isExpanded: true,
+                                                                            value: bathroomValue,
+                                                                            onChanged: (
+                                                                                newValue) {
+                                                                                setState(() {
+                                                                                    bathroomValue =
+                                                                                        newValue;
+                                                                                });
+                                                                            },
+                                                                            items: numbers
+                                                                                .map((
+                                                                                type) {
+                                                                                return DropdownMenuItem(
+                                                                                    child: new Text(
+                                                                                        type),
+                                                                                    value: type,
+                                                                                );
+                                                                            }).toList(),
+                                                                        )
+                                                                    ],
+                                                                )
                                                             ),
                                                         ],
                                                     )
@@ -612,7 +718,11 @@ class HomeState extends State<Home> {
                                                                 Expanded(
                                                                     child: MaterialButton(
                                                                         child: Text(
-                                                                            "Cerrar"),
+                                                                            "Cerrar",
+                                                                            style: TextStyle(
+                                                                                color: Color(0xFFDC3545)
+                                                                            ),
+                                                                        ),
                                                                         onPressed: () {
                                                                             close();
                                                                             Navigator
@@ -650,8 +760,7 @@ class HomeState extends State<Home> {
                                                                         hoverElevation: 0,
                                                                         highlightElevation: 0,
                                                                         disabledElevation: 0,
-                                                                        textColor: Colors
-                                                                            .blue,
+                                                                        textColor: Color(0xFF0069D9),
                                                                         padding: EdgeInsets
                                                                             .all(
                                                                             20),
@@ -665,9 +774,9 @@ class HomeState extends State<Home> {
                                         )
                                     );
                                 }
-                            ),
-                        ),
-                    ),
+                            )
+                        )
+                    )
                 );
             }
         );
