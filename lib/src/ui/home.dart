@@ -3,12 +3,12 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:hogarencuba/src/api/blocs.dart';
 import 'package:hogarencuba/src/model/home.dart';
 import 'package:hogarencuba/src/util/colors.dart';
 import 'package:hogarencuba/src/widget/modal.dart';
 import 'package:localstorage/localstorage.dart';
 
-import '../api/blocs.dart';
 import 'about.dart';
 import 'home_details.dart';
 
