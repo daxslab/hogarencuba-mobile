@@ -27,6 +27,7 @@ class Modal extends StatelessWidget {
     static const RoundedRectangleBorder _defaultDialogShape =
     RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(4.0)));
+    
     static const double _defaultElevation = 24.0;
     
     @override

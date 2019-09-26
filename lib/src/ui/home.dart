@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hogarencuba/src/api/blocs.dart';
@@ -8,6 +9,7 @@ import 'package:hogarencuba/src/model/home.dart';
 import 'package:hogarencuba/src/util/colors.dart';
 import 'package:hogarencuba/src/widget/modal.dart';
 import 'package:localstorage/localstorage.dart';
+import 'package:toast/toast.dart';
 
 import 'about.dart';
 import 'home_details.dart';
@@ -303,13 +305,16 @@ class HomeState extends State<Home> {
     int bedrooms;
     int bathrooms;
     
-    bool visibilityFilter;
+    bool isFiltered;
+    
+    bool isRetrying;
     
     @override
     void initState() {
         super.initState();
         setState(() {
-            this.visibilityFilter = true;
+            this.isFiltered = false;
+            this.isRetrying = false;
         });
         blocs.homes();
     }
@@ -349,9 +354,13 @@ class HomeState extends State<Home> {
             ),
             floatingActionButton: FloatingActionButton(
                 onPressed: () {
-                    showFormToSearch();
+                    if (isFiltered) {
+                        clear();
+                    } else {
+                        showFormToSearch();
+                    }
                 },
-                child: Icon(Icons.filter_list),
+                child: Icon(isFiltered ? Icons.close : Icons.filter_list),
                 backgroundColor: Color(0xFF0069D9),
             ),
             body: Container(
@@ -437,6 +446,19 @@ class HomeState extends State<Home> {
                                     }
                                     
                                     if (homes.isNotEmpty) {
+                                        WidgetsBinding.instance
+                                            .addPostFrameCallback((_) {
+                                            Toast.show(
+                                                isFiltered
+                                                    ? "${homes
+                                                    .length} resultados para su búsquda."
+                                                    : "${homes
+                                                    .length} propiedades en oferta.",
+                                                context,
+                                                duration: Toast.LENGTH_LONG,
+                                                gravity: Toast.BOTTOM);
+                                        });
+                                        
                                         return ListView.builder(
                                             itemCount: homes.length,
                                             itemBuilder: (context, index) {
@@ -445,7 +467,14 @@ class HomeState extends State<Home> {
                                             }
                                         );
                                     } else {
-                                        return NoProperties();
+                                        return Center(
+                                            child: Padding(
+                                                padding: EdgeInsets.all(30),
+                                                child: Text(
+                                                    "No hay resultados."
+                                                )
+                                            ),
+                                        );
                                     }
                                 } else if (snapshot.hasError) {
                                     return FutureBuilder(
@@ -522,6 +551,22 @@ class HomeState extends State<Home> {
                                                     }
                                                     
                                                     if (homes.isNotEmpty) {
+                                                        WidgetsBinding.instance
+                                                            .addPostFrameCallback((
+                                                            _) {
+                                                            Toast.show(
+                                                                isFiltered
+                                                                    ? "${homes
+                                                                    .length} resultados para su búsquda."
+                                                                    : "${homes
+                                                                    .length} propiedades en oferta.",
+                                                                context,
+                                                                duration: Toast
+                                                                    .LENGTH_LONG,
+                                                                gravity: Toast
+                                                                    .BOTTOM);
+                                                        });
+                                                        
                                                         return ListView.builder(
                                                             itemCount: homes
                                                                 .length,
@@ -533,10 +578,32 @@ class HomeState extends State<Home> {
                                                             }
                                                         );
                                                     } else {
-                                                        return NoProperties();
+                                                        return Center(
+                                                            child: Padding(
+                                                                padding: EdgeInsets
+                                                                    .all(30),
+                                                                child: Text(
+                                                                    "No hay resultados."
+                                                                )
+                                                            ),
+                                                        );
                                                     }
                                                 } else {
-                                                    return NoProperties();
+                                                    if (isRetrying) {
+                                                        return Center(
+                                                            child: CircularProgressIndicator()
+                                                        );
+                                                    }
+                                                    
+                                                    return Center(
+                                                        child: Padding(
+                                                            padding: EdgeInsets
+                                                                .all(30),
+                                                            child: Text(
+                                                                "No hay resultados."
+                                                            )
+                                                        ),
+                                                    );
                                                 }
                                             } else {
                                                 return Center(
@@ -590,7 +657,8 @@ class HomeState extends State<Home> {
                                                             color: Color(
                                                                 0xFFDC3545),
                                                         ),
-                                                        padding: EdgeInsets.only(
+                                                        padding: EdgeInsets
+                                                            .only(
                                                             top: 20
                                                         ),
                                                         child: Column(
@@ -1078,24 +1146,45 @@ class HomeState extends State<Home> {
     }
     
     void close() {
-        this.provinceValue =
-        (this.province != null) ? this.province : "--Cualquiera--";
-        this.cityValue =
-        (this.city != null) ? this.city : "--Cualquiera--";
-        this.typeValue =
-        (this.type != null) ? this.type : "--Cualquiera--";
-        this.minPriceController.text =
-        (this.minPrice != null) ? this.minPrice.toString() : "";
-        this.maxPriceController.text =
-        (this.maxPrice != null) ? this.maxPrice.toString() : "";
-        this.bedroomValue =
-        (this.bedrooms != null) ? this.bedrooms.toString() : "--Cualquiera--";
-        this.bathroomValue =
-        (this.bathrooms != null) ? this.bathrooms.toString() : "--Cualquiera--";
+        setState(() {
+            this.provinceValue =
+            (this.province != null) ? this.province : "--Cualquiera--";
+            this.cityValue =
+            (this.city != null) ? this.city : "--Cualquiera--";
+            this.typeValue =
+            (this.type != null) ? this.type : "--Cualquiera--";
+            this.minPriceController.text =
+            (this.minPrice != null) ? this.minPrice.toString() : "";
+            this.maxPriceController.text =
+            (this.maxPrice != null) ? this.maxPrice.toString() : "";
+            this.bedroomValue =
+            (this.bedrooms != null)
+                ? this.bedrooms.toString()
+                : "--Cualquiera--";
+            this.bathroomValue =
+            (this.bathrooms != null)
+                ? this.bathrooms.toString()
+                : "--Cualquiera--";
+        });
+    }
+    
+    void clear() {
+        setState(() {
+            this.isFiltered = false;
+            this.province = null;
+            this.city = null;
+            this.type = null;
+            this.minPrice = null;
+            this.maxPrice = null;
+            this.bedrooms = null;
+            this.bathrooms = null;
+        });
+        close();
     }
     
     void search() {
         setState(() {
+            this.isFiltered = true;
             if (this.provinceValue == "--Cualquiera--") {
                 this.province = null;
             } else {
@@ -1132,22 +1221,6 @@ class HomeState extends State<Home> {
                 this.bathrooms = int.parse(this.bathroomValue);
             }
         });
-    }
-}
-
-class NoProperties extends StatelessWidget {
-    
-    @override
-    Widget build(BuildContext context) {
-        return Container(
-            padding: EdgeInsets
-                .all(
-                30),
-            child: Center(
-                child: Text(
-                    "No hay propiedades para mostrar."),
-            ),
-        );
     }
 }
 
@@ -1382,6 +1455,58 @@ class HomeCard extends StatelessWidget {
                     ),
                 )
             )
+        );
+    }
+}
+
+class Retry extends StatelessWidget {
+    @override
+    Widget build(BuildContext context) {
+        return Padding(
+            padding: EdgeInsets
+                .all(
+                30),
+            child: Row(
+                mainAxisSize: MainAxisSize
+                    .max,
+                mainAxisAlignment: MainAxisAlignment
+                    .center,
+                children: <
+                    Widget>[
+                    Column(
+                        mainAxisSize: MainAxisSize
+                            .max,
+                        mainAxisAlignment: MainAxisAlignment
+                            .center,
+                        children: <
+                            Widget>[
+                            Padding(
+                                padding: EdgeInsets
+                                    .only(
+                                    bottom: 10),
+                                child: Text(
+                                    "Compruebe su conexión de red."
+                                )
+                            ),
+                            RaisedButton(
+                                child: Text(
+                                    "Reintentar",
+                                    style: TextStyle(
+                                        color: Colors
+                                            .white
+                                    ),
+                                ),
+                                onPressed: () {
+                                    blocs
+                                        .homes();
+                                },
+                                color: Color(
+                                    0xFF0069D9),
+                            )
+                        ],
+                    )
+                ],
+            ),
         );
     }
 }
