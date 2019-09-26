@@ -457,12 +457,12 @@ class HomeState extends State<Home> {
                                             Toast.show(
                                                 isFiltered
                                                     ? "${homes
-                                                    .length} resultados para su búsquda."
+                                                    .length} resultados para su búsqueda."
                                                     : "${homes
                                                     .length} propiedades en oferta.",
                                                 context,
                                                 duration: Toast.LENGTH_LONG,
-                                                gravity: Toast.TOP);
+                                                gravity: Toast.BOTTOM);
                                         });
                                         
                                         return ListView.builder(
@@ -563,14 +563,14 @@ class HomeState extends State<Home> {
                                                             Toast.show(
                                                                 isFiltered
                                                                     ? "${homes
-                                                                    .length} resultados para su búsquda."
+                                                                    .length} resultados para su búsqueda."
                                                                     : "${homes
                                                                     .length} propiedades en oferta.",
                                                                 context,
                                                                 duration: Toast
                                                                     .LENGTH_LONG,
                                                                 gravity: Toast
-                                                                    .TOP);
+                                                                    .BOTTOM);
                                                         });
                                                         
                                                         return ListView.builder(
