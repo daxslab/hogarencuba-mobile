@@ -386,6 +386,12 @@ class HomeState extends State<Home> {
                             stream: blocs.subject.stream,
                             builder: (context,
                                 AsyncSnapshot<Response> snapshot) {
+                                
+//                                SchedulerBinding.instance.addPostFrameCallback((_) =>
+//                                    setState(() {
+//                                        this.isRetrying = false;
+//                                    }));
+                                
                                 if (snapshot.hasData) {
                                     var data = snapshot.data.data;
                                     
