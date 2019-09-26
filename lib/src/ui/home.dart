@@ -462,7 +462,7 @@ class HomeState extends State<Home> {
                                                     .length} propiedades en oferta.",
                                                 context,
                                                 duration: Toast.LENGTH_LONG,
-                                                gravity: Toast.BOTTOM);
+                                                gravity: Toast.TOP);
                                         });
                                         
                                         return ListView.builder(
@@ -570,7 +570,7 @@ class HomeState extends State<Home> {
                                                                 duration: Toast
                                                                     .LENGTH_LONG,
                                                                 gravity: Toast
-                                                                    .BOTTOM);
+                                                                    .TOP);
                                                         });
                                                         
                                                         return ListView.builder(
