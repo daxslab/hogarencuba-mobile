@@ -386,12 +386,6 @@ class HomeState extends State<Home> {
                             stream: blocs.subject.stream,
                             builder: (context,
                                 AsyncSnapshot<Response> snapshot) {
-                                
-//                                SchedulerBinding.instance.addPostFrameCallback((_) =>
-//                                    setState(() {
-//                                        this.isRetrying = false;
-//                                    }));
-                                
                                 if (snapshot.hasData) {
                                     var data = snapshot.data.data;
                                     
@@ -454,15 +448,19 @@ class HomeState extends State<Home> {
                                     if (homes.isNotEmpty) {
                                         WidgetsBinding.instance
                                             .addPostFrameCallback((_) {
-                                            Toast.show(
-                                                isFiltered
-                                                    ? "${homes
-                                                    .length} resultados para su búsqueda."
-                                                    : "${homes
-                                                    .length} propiedades en oferta.",
-                                                context,
-                                                duration: Toast.LENGTH_LONG,
-                                                gravity: Toast.BOTTOM);
+                                            if (ModalRoute
+                                                .of(context)
+                                                .isCurrent) {
+                                                Toast.show(
+                                                    isFiltered
+                                                        ? "${homes
+                                                        .length} resultados para su búsqueda."
+                                                        : "${homes
+                                                        .length} propiedades en oferta.",
+                                                    context,
+                                                    duration: Toast.LENGTH_LONG,
+                                                    gravity: Toast.BOTTOM);
+                                            }
                                         });
                                         
                                         return ListView.builder(
@@ -558,19 +556,20 @@ class HomeState extends State<Home> {
                                                     
                                                     if (homes.isNotEmpty) {
                                                         WidgetsBinding.instance
-                                                            .addPostFrameCallback((
-                                                            _) {
-                                                            Toast.show(
-                                                                isFiltered
-                                                                    ? "${homes
-                                                                    .length} resultados para su búsqueda."
-                                                                    : "${homes
-                                                                    .length} propiedades en oferta.",
-                                                                context,
-                                                                duration: Toast
-                                                                    .LENGTH_LONG,
-                                                                gravity: Toast
-                                                                    .BOTTOM);
+                                                            .addPostFrameCallback((_) {
+                                                            if (ModalRoute
+                                                                .of(context)
+                                                                .isCurrent) {
+                                                                Toast.show(
+                                                                    isFiltered
+                                                                        ? "${homes
+                                                                        .length} resultados para su búsqueda."
+                                                                        : "${homes
+                                                                        .length} propiedades en oferta.",
+                                                                    context,
+                                                                    duration: Toast.LENGTH_LONG,
+                                                                    gravity: Toast.BOTTOM);
+                                                            }
                                                         });
                                                         
                                                         return ListView.builder(
