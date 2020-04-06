@@ -1288,7 +1288,7 @@ class HomeCard extends StatelessWidget {
                                                                     padding: EdgeInsets
                                                                             .only(left: 20),
                                                                     child: Icon(
-                                                                            Icons.star_border,
+                                                                            FontAwesomeIcons.gem,
                                                                             size: 32,
                                                                             color: Colors.white)
                                                             )
