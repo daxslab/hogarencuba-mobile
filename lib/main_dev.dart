@@ -7,6 +7,7 @@ void main() {
     WidgetsFlutterBinding.ensureInitialized();
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     FlavorConfig(
+            environment: FlavorEnvironment.DEV,
             variables: {
                 "baseUrl": "https://hogarencuba.com"
             }
