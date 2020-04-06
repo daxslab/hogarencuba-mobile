@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hogarencuba/src/api/blocs.dart';
@@ -15,7 +14,9 @@ import 'about.dart';
 import 'home_details.dart';
 
 class Home extends StatefulWidget {
-    
+
+    static const String routeName = 'home';
+
     @override
     State<StatefulWidget> createState() {
         return HomeState();
@@ -23,10 +24,10 @@ class Home extends StatefulWidget {
 }
 
 class HomeState extends State<Home> {
-    
+
     final _formKey = GlobalKey<FormState>();
     final LocalStorage storage = LocalStorage('dataStorage');
-    
+
     final Map<String, dynamic> location = {
         "Pinar del Río": [
             "--Cualquiera--",
@@ -243,7 +244,7 @@ class HomeState extends State<Home> {
             "Nueva gerona"
         ]
     };
-    
+
     final List<String> numbers = [
         "--Cualquiera--",
         "0",
@@ -257,7 +258,7 @@ class HomeState extends State<Home> {
         "8",
         "9",
     ];
-    
+
     final List<String> privinces = [
         "--Cualquiera--",
         "Pinar del Río",
@@ -277,18 +278,18 @@ class HomeState extends State<Home> {
         "Guantánamo",
         "Isla de la Juventud",
     ];
-    
+
     List<String> cities = [
         "--Cualquiera--"
     ];
-    
+
     final List<String> types = [
         "--Cualquiera--",
         "Casa",
         "Apartamento",
         "Terreno"
     ];
-    
+
     String provinceValue = "--Cualquiera--";
     String cityValue = "--Cualquiera--";
     String typeValue = "--Cualquiera--";
@@ -296,7 +297,7 @@ class HomeState extends State<Home> {
     final maxPriceController = TextEditingController();
     String bedroomValue = "--Cualquiera--";
     String bathroomValue = "--Cualquiera--";
-    
+
     String province;
     String city;
     String type;
@@ -304,11 +305,11 @@ class HomeState extends State<Home> {
     int maxPrice;
     int bedrooms;
     int bathrooms;
-    
+
     bool isFiltered;
-    
+
     bool isRetrying;
-    
+
     @override
     void initState() {
         super.initState();
@@ -318,838 +319,812 @@ class HomeState extends State<Home> {
         });
         blocs.homes();
     }
-    
+
     @override
     Widget build(BuildContext context) {
-        SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-        SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
-        SystemChrome.setSystemUIOverlayStyle(
-            SystemUiOverlayStyle.light.copyWith(
-                statusBarColor: Colors.transparent
-            ));
-        
         return Scaffold(
-            appBar: AppBar(
-                backgroundColor: Color(0xFFDC3545),
-                elevation: 0.0,
-                title: Text(
-                    "HogarEnCuba",
-                    style: TextStyle(
-                        color: Colors.white
-                    ),
-                ),
-                actions: <Widget>[
-                    IconButton(
-                        icon: Icon(Icons.info_outline),
-                        onPressed: () {
-                            Navigator.of(context).push(
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        About()
-                                )
-                            );
-                        })
-                ],
-            
-            ),
-            floatingActionButton: FloatingActionButton(
-                onPressed: () {
-                    if (isFiltered) {
-                        clear();
-                    } else {
-                        showFormToSearch();
-                    }
-                },
-                child: Icon(isFiltered ? Icons.close : Icons.filter_list),
-                backgroundColor: Color(0xFF0069D9),
-            ),
-            body: Container(
-                color: Colors.white,
-                child: Stack(
-                    children: <Widget>[
-                        Opacity(
-                            opacity: 0.6,
-                            child: Image.asset(
-                                "assets/images/background.png",
-                                fit: BoxFit.cover,
-                                width: MediaQuery
-                                    .of(context)
-                                    .size
-                                    .width,
-                                height: MediaQuery
-                                    .of(context)
-                                    .size
-                                    .height,
-                            ),
+                appBar: AppBar(
+                    backgroundColor: Color(0xFFDC3545),
+                    elevation: 0.0,
+                    title: Text(
+                        "HogarEnCuba",
+                        style: TextStyle(
+                                color: Colors.white
                         ),
-                        StreamBuilder<Response>(
-                            stream: blocs.subject.stream,
-                            builder: (context,
-                                AsyncSnapshot<Response> snapshot) {
-                                if (snapshot.hasData) {
-                                    var data = snapshot.data.data;
-                                    
-                                    storage.setItem("data", data);
-                                    
-                                    var list = data as List;
-                                    
-                                    List<HomeEntity> homes = list.map((i) =>
-                                        HomeEntity.fromJson(i))
-                                        .toList();
-                                    
-                                    if (this.province != null) {
-                                        homes = homes.where((home) =>
-                                            home.location.trim()
-                                                .endsWith(
-                                                this.province))
-                                            .toList();
-                                    }
-                                    
-                                    if (this.city != null) {
-                                        homes = homes.where((home) =>
-                                            home.location.trim()
-                                                .startsWith(
-                                                this.city))
-                                            .toList();
-                                    }
-                                    
-                                    if (this.type != null) {
-                                        homes = homes.where((home) =>
-                                        home.type.trim() ==
-                                            this.type).toList();
-                                    }
-                                    
-                                    if (this.minPrice != null) {
-                                        homes = homes.where((home) =>
-                                        home.price >=
-                                            this.minPrice).toList();
-                                    }
-                                    
-                                    if (this.maxPrice != null) {
-                                        homes = homes.where((home) =>
-                                        home.price <=
-                                            this.maxPrice).toList();
-                                    }
-                                    
-                                    if (this.bedrooms != null) {
-                                        homes = homes.where((home) =>
-                                        home.bedroomsCount ==
-                                            this.bedrooms)
-                                            .toList();
-                                    }
-                                    
-                                    if (this.bathrooms != null) {
-                                        homes = homes.where((home) =>
-                                        home.bathroomsCount ==
-                                            this.bathrooms)
-                                            .toList();
-                                    }
-                                    
-                                    if (homes.isNotEmpty) {
-                                        WidgetsBinding.instance
-                                            .addPostFrameCallback((_) {
-                                            if (ModalRoute
+                    ),
+                    actions: <Widget>[
+                        IconButton(
+                                icon: Icon(Icons.info_outline),
+                                onPressed: () {
+                                    Navigator.of(context).pushNamed(About.routeName);
+                                })
+                    ],
+
+                ),
+                floatingActionButton: FloatingActionButton(
+                    onPressed: () {
+                        if (isFiltered) {
+                            clear();
+                        } else {
+                            showFormToSearch();
+                        }
+                    },
+                    child: Icon(isFiltered ? Icons.close : Icons.filter_list),
+                    backgroundColor: Color(0xFF0069D9),
+                ),
+                body: Container(
+                        color: Colors.white,
+                        child: Stack(
+                            children: <Widget>[
+                                Opacity(
+                                    opacity: 0.6,
+                                    child: Image.asset(
+                                        "assets/images/background.png",
+                                        fit: BoxFit.cover,
+                                        width: MediaQuery
                                                 .of(context)
-                                                .isCurrent) {
-                                                Toast.show(
-                                                    isFiltered
-                                                        ? "${homes
-                                                        .length} resultados para su búsqueda."
-                                                        : "${homes
-                                                        .length} propiedades en oferta.",
-                                                    context,
-                                                    duration: Toast.LENGTH_LONG,
-                                                    gravity: Toast.BOTTOM);
-                                            }
-                                        });
-                                        
-                                        return ListView.builder(
-                                            itemCount: homes.length,
-                                            itemBuilder: (context, index) {
-                                                return HomeCard(
-                                                    data: homes[index]);
-                                            }
-                                        );
-                                    } else {
-                                        return Center(
-                                            child: Padding(
-                                                padding: EdgeInsets.all(30),
-                                                child: Text(
-                                                    "No hay resultados."
-                                                )
-                                            ),
-                                        );
-                                    }
-                                } else if (snapshot.hasError) {
-                                    return FutureBuilder(
-                                        future: storage.ready,
-                                        builder: (BuildContext context,
-                                            snapshot) {
-                                            if (snapshot.data == true) {
-                                                List<dynamic> list = storage
-                                                    .getItem("data");
-                                                
-                                                if (list != null) {
-                                                    List<
-                                                        HomeEntity> homes = list
-                                                        .map((i) =>
+                                                .size
+                                                .width,
+                                        height: MediaQuery
+                                                .of(context)
+                                                .size
+                                                .height,
+                                    ),
+                                ),
+                                StreamBuilder<Response>(
+                                        stream: blocs.subject.stream,
+                                        builder: (context,
+                                                  AsyncSnapshot<Response> snapshot) {
+                                            if (snapshot.hasData) {
+                                                var data = snapshot.data.data;
+
+                                                storage.setItem("data", data);
+
+                                                var list = data as List;
+
+                                                List<HomeEntity> homes = list.map((i) =>
                                                         HomeEntity.fromJson(i))
                                                         .toList();
-                                                    
-                                                    if (this.province != null) {
-                                                        homes = homes.where((
-                                                            home) =>
+
+                                                if (this.province != null) {
+                                                    homes = homes.where((home) =>
                                                             home.location.trim()
-                                                                .endsWith(
-                                                                this.province))
+                                                                    .endsWith(
+                                                                    this.province))
                                                             .toList();
-                                                    }
-                                                    
-                                                    if (this.city != null) {
-                                                        homes = homes.where((
-                                                            home) =>
+                                                }
+
+                                                if (this.city != null) {
+                                                    homes = homes.where((home) =>
                                                             home.location.trim()
-                                                                .startsWith(
-                                                                this.city))
+                                                                    .startsWith(
+                                                                    this.city))
                                                             .toList();
-                                                    }
-                                                    
-                                                    if (this.type != null) {
-                                                        homes = homes.where((
-                                                            home) =>
-                                                        home.type.trim() ==
+                                                }
+
+                                                if (this.type != null) {
+                                                    homes = homes.where((home) =>
+                                                    home.type.trim() ==
                                                             this.type).toList();
-                                                    }
-                                                    
-                                                    if (this.minPrice != null) {
-                                                        homes = homes.where((
-                                                            home) =>
-                                                        home.price >=
-                                                            this.minPrice)
-                                                            .toList();
-                                                    }
-                                                    
-                                                    if (this.maxPrice != null) {
-                                                        homes = homes.where((
-                                                            home) =>
-                                                        home.price <=
-                                                            this.maxPrice)
-                                                            .toList();
-                                                    }
-                                                    
-                                                    if (this.bedrooms != null) {
-                                                        homes = homes.where((
-                                                            home) =>
-                                                        home.bedroomsCount ==
+                                                }
+
+                                                if (this.minPrice != null) {
+                                                    homes = homes.where((home) =>
+                                                    home.price >=
+                                                            this.minPrice).toList();
+                                                }
+
+                                                if (this.maxPrice != null) {
+                                                    homes = homes.where((home) =>
+                                                    home.price <=
+                                                            this.maxPrice).toList();
+                                                }
+
+                                                if (this.bedrooms != null) {
+                                                    homes = homes.where((home) =>
+                                                    home.bedroomsCount ==
                                                             this.bedrooms)
                                                             .toList();
-                                                    }
-                                                    
-                                                    if (this.bathrooms !=
-                                                        null) {
-                                                        homes = homes.where((
-                                                            home) =>
-                                                        home.bathroomsCount ==
+                                                }
+
+                                                if (this.bathrooms != null) {
+                                                    homes = homes.where((home) =>
+                                                    home.bathroomsCount ==
                                                             this.bathrooms)
                                                             .toList();
-                                                    }
-                                                    
-                                                    if (homes.isNotEmpty) {
-                                                        WidgetsBinding.instance
+                                                }
+
+                                                if (homes.isNotEmpty) {
+                                                    WidgetsBinding.instance
                                                             .addPostFrameCallback((_) {
-                                                            if (ModalRoute
+                                                        if (ModalRoute
                                                                 .of(context)
                                                                 .isCurrent) {
-                                                                Toast.show(
+                                                            Toast.show(
                                                                     isFiltered
-                                                                        ? "${homes
-                                                                        .length} resultados para su búsqueda."
-                                                                        : "${homes
-                                                                        .length} propiedades en oferta.",
+                                                                            ? "${homes
+                                                                            .length} resultados para su búsqueda."
+                                                                            : "${homes
+                                                                            .length} propiedades en oferta.",
                                                                     context,
                                                                     duration: Toast.LENGTH_LONG,
                                                                     gravity: Toast.BOTTOM);
-                                                            }
-                                                        });
-                                                        
-                                                        return ListView.builder(
-                                                            itemCount: homes
-                                                                .length,
-                                                            itemBuilder: (
-                                                                context,
-                                                                index) {
+                                                        }
+                                                    });
+
+                                                    return ListView.builder(
+                                                            itemCount: homes.length,
+                                                            itemBuilder: (context, index) {
                                                                 return HomeCard(
-                                                                    data: homes[index]);
+                                                                        data: homes[index]);
                                                             }
-                                                        );
-                                                    } else {
-                                                        return Center(
-                                                            child: Padding(
-                                                                padding: EdgeInsets
-                                                                    .all(30),
-                                                                child: Text(
-                                                                    "No hay resultados."
-                                                                )
-                                                            ),
-                                                        );
-                                                    }
+                                                    );
                                                 } else {
-                                                    if (isRetrying) {
-                                                        return Center(
-                                                            child: CircularProgressIndicator()
-                                                        );
-                                                    }
-                                                    
                                                     return Center(
                                                         child: Padding(
-                                                            padding: EdgeInsets
-                                                                .all(30),
-                                                            child: Text(
-                                                                "No hay resultados."
-                                                            )
+                                                                padding: EdgeInsets.all(30),
+                                                                child: Text(
+                                                                        "No hay resultados."
+                                                                )
                                                         ),
                                                     );
                                                 }
+                                            } else if (snapshot.hasError) {
+                                                return FutureBuilder(
+                                                    future: storage.ready,
+                                                    builder: (BuildContext context,
+                                                              snapshot) {
+                                                        if (snapshot.data == true) {
+                                                            List<dynamic> list = storage
+                                                                    .getItem("data");
+
+                                                            if (list != null) {
+                                                                List<
+                                                                        HomeEntity> homes = list
+                                                                        .map((i) =>
+                                                                        HomeEntity.fromJson(i))
+                                                                        .toList();
+
+                                                                if (this.province != null) {
+                                                                    homes = homes.where((home) =>
+                                                                            home.location.trim()
+                                                                                    .endsWith(
+                                                                                    this.province))
+                                                                            .toList();
+                                                                }
+
+                                                                if (this.city != null) {
+                                                                    homes = homes.where((home) =>
+                                                                            home.location.trim()
+                                                                                    .startsWith(
+                                                                                    this.city))
+                                                                            .toList();
+                                                                }
+
+                                                                if (this.type != null) {
+                                                                    homes = homes.where((home) =>
+                                                                    home.type.trim() ==
+                                                                            this.type).toList();
+                                                                }
+
+                                                                if (this.minPrice != null) {
+                                                                    homes = homes.where((home) =>
+                                                                    home.price >=
+                                                                            this.minPrice)
+                                                                            .toList();
+                                                                }
+
+                                                                if (this.maxPrice != null) {
+                                                                    homes = homes.where((home) =>
+                                                                    home.price <=
+                                                                            this.maxPrice)
+                                                                            .toList();
+                                                                }
+
+                                                                if (this.bedrooms != null) {
+                                                                    homes = homes.where((home) =>
+                                                                    home.bedroomsCount ==
+                                                                            this.bedrooms)
+                                                                            .toList();
+                                                                }
+
+                                                                if (this.bathrooms !=
+                                                                        null) {
+                                                                    homes = homes.where((home) =>
+                                                                    home.bathroomsCount ==
+                                                                            this.bathrooms)
+                                                                            .toList();
+                                                                }
+
+                                                                if (homes.isNotEmpty) {
+                                                                    WidgetsBinding.instance
+                                                                            .addPostFrameCallback((_) {
+                                                                        if (ModalRoute
+                                                                                .of(context)
+                                                                                .isCurrent) {
+                                                                            Toast.show(
+                                                                                    isFiltered
+                                                                                            ? "${homes
+                                                                                            .length} resultados para su búsqueda."
+                                                                                            : "${homes
+                                                                                            .length} propiedades en oferta.",
+                                                                                    context,
+                                                                                    duration: Toast
+                                                                                            .LENGTH_LONG,
+                                                                                    gravity: Toast
+                                                                                            .BOTTOM);
+                                                                        }
+                                                                    });
+
+                                                                    return ListView.builder(
+                                                                            itemCount: homes
+                                                                                    .length,
+                                                                            itemBuilder: (context,
+                                                                                          index) {
+                                                                                return HomeCard(
+                                                                                        data: homes[index]);
+                                                                            }
+                                                                    );
+                                                                } else {
+                                                                    return Center(
+                                                                        child: Padding(
+                                                                                padding: EdgeInsets
+                                                                                        .all(30),
+                                                                                child: Text(
+                                                                                        "No hay resultados."
+                                                                                )
+                                                                        ),
+                                                                    );
+                                                                }
+                                                            } else {
+                                                                if (isRetrying) {
+                                                                    return Center(
+                                                                            child: CircularProgressIndicator()
+                                                                    );
+                                                                }
+
+                                                                return Center(
+                                                                    child: Padding(
+                                                                            padding: EdgeInsets
+                                                                                    .all(30),
+                                                                            child: Text(
+                                                                                    "No hay resultados."
+                                                                            )
+                                                                    ),
+                                                                );
+                                                            }
+                                                        } else {
+                                                            return Center(
+                                                                    child: CircularProgressIndicator()
+                                                            );
+                                                        }
+                                                    },
+                                                );
                                             } else {
                                                 return Center(
-                                                    child: CircularProgressIndicator()
+                                                        child: CircularProgressIndicator()
                                                 );
                                             }
-                                        },
-                                    );
-                                } else {
-                                    return Center(
-                                        child: CircularProgressIndicator()
-                                    );
-                                }
-                            }
+                                        }
+                                )
+                            ],
                         )
-                    ],
                 )
-            )
         );
     }
-    
+
     void showFormToSearch() {
         showGeneralDialog(
-            context: context,
-            barrierColor: Colors.black54,
-            barrierDismissible: false,
-            transitionDuration: Duration(milliseconds: 300),
-            pageBuilder: (BuildContext context, __, ___) {
-                return WillPopScope(
-                    onWillPop: () async {
-                        return Future.value(false);
-                    },
-                    child: GestureDetector(
-                        onTap: () {
-                            FocusScope.of(context).requestFocus(FocusNode());
-                        },
-                        child: Modal(
-                            child: Scaffold(
-                                body: StatefulBuilder(
-                                    builder: (BuildContext context,
-                                        StateSetter setState) {
-                                        return Form(
-                                            key: _formKey,
-                                            child: Column(
-                                                mainAxisSize: MainAxisSize.max,
-                                                mainAxisAlignment: MainAxisAlignment
-                                                    .spaceBetween,
-                                                children: <Widget>[
-                                                    Container(
-                                                        decoration: BoxDecoration(
-                                                            color: Color(
-                                                                0xFFDC3545),
-                                                        ),
-                                                        padding: EdgeInsets
-                                                            .only(
-                                                            top: 20
-                                                        ),
-                                                        child: Column(
-                                                            mainAxisSize: MainAxisSize
-                                                                .min,
-                                                            children: <Widget>[
-                                                                Text(
-                                                                    "¿Qué estás buscando?",
-                                                                    style: TextStyle(
-                                                                        fontSize: 24,
-                                                                        fontWeight: FontWeight
-                                                                            .bold,
-                                                                        color: Colors
-                                                                            .white
-                                                                    ),
-                                                                    textAlign: TextAlign
-                                                                        .center,
-                                                                ),
-                                                                Padding(
-                                                                    padding: EdgeInsets
-                                                                        .only(
-                                                                        top: 20),
-                                                                    child: Divider(
-                                                                        color: Colors
-                                                                            .black26,
-                                                                        height: 1,
-                                                                    ),
-                                                                )
-                                                            ],
-                                                        ),
-                                                    ),
-                                                    Expanded(
-                                                        child: ListView(
-                                                            children: <Widget>[
-                                                                Padding(
-                                                                    padding: EdgeInsets
-                                                                        .symmetric(
-                                                                        horizontal: 20,
-                                                                        vertical: 10
-                                                                    ),
-                                                                    child: Column(
-                                                                        mainAxisSize: MainAxisSize
-                                                                            .min,
-                                                                        crossAxisAlignment: CrossAxisAlignment
-                                                                            .start,
-                                                                        children: <
-                                                                            Widget>[
-                                                                            Text(
-                                                                                "Provincia",
-                                                                                style: TextStyle(
-                                                                                    color: Color(
-                                                                                        0xFF0069D9),
-                                                                                    fontSize: 12
-                                                                                ),
-                                                                            ),
-                                                                            DropdownButton(
-                                                                                isExpanded: true,
-                                                                                value: provinceValue,
-                                                                                onChanged: (
-                                                                                    newValue) {
-                                                                                    setState(() {
-                                                                                        provinceValue =
-                                                                                            newValue;
-                                                                                        cityValue =
-                                                                                        "--Cualquiera--";
-                                                                                        if (newValue !=
-                                                                                            "--Cualquiera--") {
-                                                                                            cities =
-                                                                                            location[newValue] as List<
-                                                                                                String>;
-                                                                                        }
-                                                                                    });
-                                                                                },
-                                                                                items: privinces
-                                                                                    .map((
-                                                                                    type) {
-                                                                                    return DropdownMenuItem(
-                                                                                        child: new Text(
-                                                                                            type),
-                                                                                        value: type,
-                                                                                    );
-                                                                                })
-                                                                                    .toList(),
-                                                                            )
-                                                                        ],
-                                                                    )
-                                                                ),
-                                                                Padding(
-                                                                    padding: EdgeInsets
-                                                                        .symmetric(
-                                                                        horizontal: 20,
-                                                                        vertical: 10
-                                                                    ),
-                                                                    child: Column(
-                                                                        mainAxisSize: MainAxisSize
-                                                                            .min,
-                                                                        crossAxisAlignment: CrossAxisAlignment
-                                                                            .start,
-                                                                        children: <
-                                                                            Widget>[
-                                                                            Text(
-                                                                                "Municipio",
-                                                                                style: TextStyle(
-                                                                                    color: Color(
-                                                                                        0xFF0069D9),
-                                                                                    fontSize: 12
-                                                                                ),
-                                                                            ),
-                                                                            DropdownButton(
-                                                                                isExpanded: true,
-                                                                                value: cityValue,
-                                                                                onChanged: (
-                                                                                    newValue) {
-                                                                                    setState(() {
-                                                                                        cityValue =
-                                                                                            newValue;
-                                                                                    });
-                                                                                },
-                                                                                items: cities
-                                                                                    .map((
-                                                                                    type) {
-                                                                                    return DropdownMenuItem(
-                                                                                        child: new Text(
-                                                                                            type),
-                                                                                        value: type,
-                                                                                    );
-                                                                                })
-                                                                                    .toList(),
-                                                                            )
-                                                                        ],
-                                                                    )
-                                                                ),
-                                                                Padding(
-                                                                    padding: EdgeInsets
-                                                                        .symmetric(
-                                                                        horizontal: 20,
-                                                                        vertical: 10
-                                                                    ),
-                                                                    child: Column(
-                                                                        mainAxisSize: MainAxisSize
-                                                                            .min,
-                                                                        crossAxisAlignment: CrossAxisAlignment
-                                                                            .start,
-                                                                        children: <
-                                                                            Widget>[
-                                                                            Text(
-                                                                                "Tipo",
-                                                                                style: TextStyle(
-                                                                                    color: Color(
-                                                                                        0xFF0069D9),
-                                                                                    fontSize: 12
-                                                                                ),
-                                                                            ),
-                                                                            DropdownButton(
-                                                                                isExpanded: true,
-                                                                                value: typeValue,
-                                                                                onChanged: (
-                                                                                    newValue) {
-                                                                                    setState(() {
-                                                                                        typeValue =
-                                                                                            newValue;
-                                                                                    });
-                                                                                },
-                                                                                items: types
-                                                                                    .map((
-                                                                                    type) {
-                                                                                    return DropdownMenuItem(
-                                                                                        child: new Text(
-                                                                                            type),
-                                                                                        value: type,
-                                                                                    );
-                                                                                })
-                                                                                    .toList(),
-                                                                            )
-                                                                        ],
-                                                                    )
-                                                                ),
-                                                                Padding(
-                                                                    padding: EdgeInsets
-                                                                        .symmetric(
-                                                                        horizontal: 20,
-                                                                        vertical: 10
-                                                                    ),
-                                                                    child: Column(
-                                                                        mainAxisSize: MainAxisSize
-                                                                            .min,
-                                                                        crossAxisAlignment: CrossAxisAlignment
-                                                                            .start,
-                                                                        children: <
-                                                                            Widget>[
-                                                                            Text(
-                                                                                "Precio mínimo",
-                                                                                style: TextStyle(
-                                                                                    color: Color(
-                                                                                        0xFF0069D9),
-                                                                                    fontSize: 12
-                                                                                ),
-                                                                            ),
-                                                                            TextFormField(
-                                                                                decoration: InputDecoration(
-                                                                                    labelText: "--Cualquiera--",
-                                                                                    contentPadding: EdgeInsets
-                                                                                        .only(
-                                                                                        top: 0,
-                                                                                        bottom: 5),
-                                                                                    hasFloatingPlaceholder: false,
-                                                                                    errorMaxLines: 3,
-                                                                                    prefixText: "\$ ",
-                                                                                    prefixStyle: TextStyle(
-                                                                                        fontWeight: FontWeight
-                                                                                            .bold
+                context: context,
+                barrierColor: Colors.black54,
+                barrierDismissible: false,
+                transitionDuration: Duration(milliseconds: 300),
+                pageBuilder: (BuildContext context, __, ___) {
+                    return WillPopScope(
+                            onWillPop: () async {
+                                return Future.value(false);
+                            },
+                            child: GestureDetector(
+                                    onTap: () {
+                                        FocusScope.of(context).requestFocus(FocusNode());
+                                    },
+                                    child: Modal(
+                                            child: Scaffold(
+                                                    body: StatefulBuilder(
+                                                            builder: (BuildContext context,
+                                                                      StateSetter setState) {
+                                                                return Form(
+                                                                        key: _formKey,
+                                                                        child: Column(
+                                                                            mainAxisSize: MainAxisSize
+                                                                                    .max,
+                                                                            mainAxisAlignment: MainAxisAlignment
+                                                                                    .spaceBetween,
+                                                                            children: <Widget>[
+                                                                                Container(
+                                                                                    decoration: BoxDecoration(
+                                                                                        color: Color(
+                                                                                                0xFFDC3545),
                                                                                     ),
-                                                                                    suffixText: " CUC",
-                                                                                    suffixStyle: TextStyle(
-                                                                                        fontWeight: FontWeight
-                                                                                            .bold
-                                                                                    )
-                                                                                ),
-                                                                                keyboardType: TextInputType
-                                                                                    .number,
-                                                                                controller: minPriceController,
-                                                                                validator: (
-                                                                                    value) {
-                                                                                    if (value
-                                                                                        .isNotEmpty &&
-                                                                                        maxPriceController
-                                                                                            .text
-                                                                                            .isNotEmpty &&
-                                                                                        int
-                                                                                            .parse(
-                                                                                            maxPriceController
-                                                                                                .text) <
-                                                                                            int
-                                                                                                .parse(
-                                                                                                value)) {
-                                                                                        return "El precio mínimo debe ser menor o igual que el precio máximo";
-                                                                                    }
-                                                                                    return null;
-                                                                                }
-                                                                            )
-                                                                        ],
-                                                                    )
-                                                                ),
-                                                                Padding(
-                                                                    padding: EdgeInsets
-                                                                        .symmetric(
-                                                                        horizontal: 20,
-                                                                        vertical: 10
-                                                                    ),
-                                                                    child: Column(
-                                                                        mainAxisSize: MainAxisSize
-                                                                            .min,
-                                                                        crossAxisAlignment: CrossAxisAlignment
-                                                                            .start,
-                                                                        children: <
-                                                                            Widget>[
-                                                                            Text(
-                                                                                "Precio máximo",
-                                                                                style: TextStyle(
-                                                                                    color: Color(
-                                                                                        0xFF0069D9),
-                                                                                    fontSize: 12
-                                                                                ),
-                                                                            ),
-                                                                            TextFormField(
-                                                                                decoration: InputDecoration(
-                                                                                    labelText: "--Cualquiera--",
-                                                                                    contentPadding: EdgeInsets
-                                                                                        .only(
-                                                                                        top: 0,
-                                                                                        bottom: 5),
-                                                                                    hasFloatingPlaceholder: false,
-                                                                                    errorMaxLines: 3,
-                                                                                    prefixText: "\$ ",
-                                                                                    prefixStyle: TextStyle(
-                                                                                        fontWeight: FontWeight
-                                                                                            .bold
+                                                                                    padding: EdgeInsets
+                                                                                            .only(
+                                                                                            top: 20
                                                                                     ),
-                                                                                    suffixText: " CUC",
-                                                                                    suffixStyle: TextStyle(
-                                                                                        fontWeight: FontWeight
-                                                                                            .bold
-                                                                                    )
+                                                                                    child: Column(
+                                                                                        mainAxisSize: MainAxisSize
+                                                                                                .min,
+                                                                                        children: <
+                                                                                                Widget>[
+                                                                                            Text(
+                                                                                                "¿Qué estás buscando?",
+                                                                                                style: TextStyle(
+                                                                                                        fontSize: 24,
+                                                                                                        fontWeight: FontWeight
+                                                                                                                .bold,
+                                                                                                        color: Colors
+                                                                                                                .white
+                                                                                                ),
+                                                                                                textAlign: TextAlign
+                                                                                                        .center,
+                                                                                            ),
+                                                                                            Padding(
+                                                                                                padding: EdgeInsets
+                                                                                                        .only(
+                                                                                                        top: 20),
+                                                                                                child: Divider(
+                                                                                                    color: Colors
+                                                                                                            .black26,
+                                                                                                    height: 1,
+                                                                                                ),
+                                                                                            )
+                                                                                        ],
+                                                                                    ),
                                                                                 ),
-                                                                                keyboardType: TextInputType
-                                                                                    .number,
-                                                                                controller: maxPriceController,
-                                                                                validator: (
-                                                                                    value) {
-                                                                                    if (value
-                                                                                        .isNotEmpty &&
-                                                                                        minPriceController
-                                                                                            .text
-                                                                                            .isNotEmpty &&
-                                                                                        int
-                                                                                            .parse(
-                                                                                            minPriceController
-                                                                                                .text) >
-                                                                                            int
-                                                                                                .parse(
-                                                                                                value)) {
-                                                                                        return "El precio máximo debe ser mayor o igual que el precio mínimo";
-                                                                                    }
-                                                                                    return null;
-                                                                                }
-                                                                            )
-                                                                        ],
-                                                                    )
-                                                                ),
-                                                                Padding(
-                                                                    padding: EdgeInsets
-                                                                        .symmetric(
-                                                                        horizontal: 20,
-                                                                        vertical: 10
-                                                                    ),
-                                                                    child: Column(
-                                                                        mainAxisSize: MainAxisSize
-                                                                            .min,
-                                                                        crossAxisAlignment: CrossAxisAlignment
-                                                                            .start,
-                                                                        children: <
-                                                                            Widget>[
-                                                                            Text(
-                                                                                "Cuartos",
-                                                                                style: TextStyle(
-                                                                                    color: Color(
-                                                                                        0xFF0069D9),
-                                                                                    fontSize: 12
+                                                                                Expanded(
+                                                                                        child: ListView(
+                                                                                            children: <
+                                                                                                    Widget>[
+                                                                                                Padding(
+                                                                                                        padding: EdgeInsets
+                                                                                                                .symmetric(
+                                                                                                                horizontal: 20,
+                                                                                                                vertical: 10
+                                                                                                        ),
+                                                                                                        child: Column(
+                                                                                                            mainAxisSize: MainAxisSize
+                                                                                                                    .min,
+                                                                                                            crossAxisAlignment: CrossAxisAlignment
+                                                                                                                    .start,
+                                                                                                            children: <
+                                                                                                                    Widget>[
+                                                                                                                Text(
+                                                                                                                    "Provincia",
+                                                                                                                    style: TextStyle(
+                                                                                                                            color: Color(
+                                                                                                                                    0xFF0069D9),
+                                                                                                                            fontSize: 12
+                                                                                                                    ),
+                                                                                                                ),
+                                                                                                                DropdownButton(
+                                                                                                                    isExpanded: true,
+                                                                                                                    value: provinceValue,
+                                                                                                                    onChanged: (newValue) {
+                                                                                                                        setState(() {
+                                                                                                                            provinceValue =
+                                                                                                                                    newValue;
+                                                                                                                            cityValue =
+                                                                                                                            "--Cualquiera--";
+                                                                                                                            if (newValue !=
+                                                                                                                                    "--Cualquiera--") {
+                                                                                                                                cities =
+                                                                                                                                location[newValue] as List<
+                                                                                                                                        String>;
+                                                                                                                            }
+                                                                                                                        });
+                                                                                                                    },
+                                                                                                                    items: privinces
+                                                                                                                            .map((type) {
+                                                                                                                        return DropdownMenuItem(
+                                                                                                                            child: new Text(
+                                                                                                                                    type),
+                                                                                                                            value: type,
+                                                                                                                        );
+                                                                                                                    })
+                                                                                                                            .toList(),
+                                                                                                                )
+                                                                                                            ],
+                                                                                                        )
+                                                                                                ),
+                                                                                                Padding(
+                                                                                                        padding: EdgeInsets
+                                                                                                                .symmetric(
+                                                                                                                horizontal: 20,
+                                                                                                                vertical: 10
+                                                                                                        ),
+                                                                                                        child: Column(
+                                                                                                            mainAxisSize: MainAxisSize
+                                                                                                                    .min,
+                                                                                                            crossAxisAlignment: CrossAxisAlignment
+                                                                                                                    .start,
+                                                                                                            children: <
+                                                                                                                    Widget>[
+                                                                                                                Text(
+                                                                                                                    "Municipio",
+                                                                                                                    style: TextStyle(
+                                                                                                                            color: Color(
+                                                                                                                                    0xFF0069D9),
+                                                                                                                            fontSize: 12
+                                                                                                                    ),
+                                                                                                                ),
+                                                                                                                DropdownButton(
+                                                                                                                    isExpanded: true,
+                                                                                                                    value: cityValue,
+                                                                                                                    onChanged: (newValue) {
+                                                                                                                        setState(() {
+                                                                                                                            cityValue =
+                                                                                                                                    newValue;
+                                                                                                                        });
+                                                                                                                    },
+                                                                                                                    items: cities
+                                                                                                                            .map((type) {
+                                                                                                                        return DropdownMenuItem(
+                                                                                                                            child: new Text(
+                                                                                                                                    type),
+                                                                                                                            value: type,
+                                                                                                                        );
+                                                                                                                    })
+                                                                                                                            .toList(),
+                                                                                                                )
+                                                                                                            ],
+                                                                                                        )
+                                                                                                ),
+                                                                                                Padding(
+                                                                                                        padding: EdgeInsets
+                                                                                                                .symmetric(
+                                                                                                                horizontal: 20,
+                                                                                                                vertical: 10
+                                                                                                        ),
+                                                                                                        child: Column(
+                                                                                                            mainAxisSize: MainAxisSize
+                                                                                                                    .min,
+                                                                                                            crossAxisAlignment: CrossAxisAlignment
+                                                                                                                    .start,
+                                                                                                            children: <
+                                                                                                                    Widget>[
+                                                                                                                Text(
+                                                                                                                    "Tipo",
+                                                                                                                    style: TextStyle(
+                                                                                                                            color: Color(
+                                                                                                                                    0xFF0069D9),
+                                                                                                                            fontSize: 12
+                                                                                                                    ),
+                                                                                                                ),
+                                                                                                                DropdownButton(
+                                                                                                                    isExpanded: true,
+                                                                                                                    value: typeValue,
+                                                                                                                    onChanged: (newValue) {
+                                                                                                                        setState(() {
+                                                                                                                            typeValue =
+                                                                                                                                    newValue;
+                                                                                                                        });
+                                                                                                                    },
+                                                                                                                    items: types
+                                                                                                                            .map((type) {
+                                                                                                                        return DropdownMenuItem(
+                                                                                                                            child: new Text(
+                                                                                                                                    type),
+                                                                                                                            value: type,
+                                                                                                                        );
+                                                                                                                    })
+                                                                                                                            .toList(),
+                                                                                                                )
+                                                                                                            ],
+                                                                                                        )
+                                                                                                ),
+                                                                                                Padding(
+                                                                                                        padding: EdgeInsets
+                                                                                                                .symmetric(
+                                                                                                                horizontal: 20,
+                                                                                                                vertical: 10
+                                                                                                        ),
+                                                                                                        child: Column(
+                                                                                                            mainAxisSize: MainAxisSize
+                                                                                                                    .min,
+                                                                                                            crossAxisAlignment: CrossAxisAlignment
+                                                                                                                    .start,
+                                                                                                            children: <
+                                                                                                                    Widget>[
+                                                                                                                Text(
+                                                                                                                    "Precio mínimo",
+                                                                                                                    style: TextStyle(
+                                                                                                                            color: Color(
+                                                                                                                                    0xFF0069D9),
+                                                                                                                            fontSize: 12
+                                                                                                                    ),
+                                                                                                                ),
+                                                                                                                TextFormField(
+                                                                                                                        decoration: InputDecoration(
+                                                                                                                                labelText: "--Cualquiera--",
+                                                                                                                                contentPadding: EdgeInsets
+                                                                                                                                        .only(
+                                                                                                                                        top: 0,
+                                                                                                                                        bottom: 5),
+                                                                                                                                hasFloatingPlaceholder: false,
+                                                                                                                                errorMaxLines: 3,
+                                                                                                                                prefixText: "\$ ",
+                                                                                                                                prefixStyle: TextStyle(
+                                                                                                                                        fontWeight: FontWeight
+                                                                                                                                                .bold
+                                                                                                                                ),
+                                                                                                                                suffixText: " CUC",
+                                                                                                                                suffixStyle: TextStyle(
+                                                                                                                                        fontWeight: FontWeight
+                                                                                                                                                .bold
+                                                                                                                                )
+                                                                                                                        ),
+                                                                                                                        keyboardType: TextInputType
+                                                                                                                                .number,
+                                                                                                                        controller: minPriceController,
+                                                                                                                        validator: (value) {
+                                                                                                                            if (value
+                                                                                                                                    .isNotEmpty &&
+                                                                                                                                    maxPriceController
+                                                                                                                                            .text
+                                                                                                                                            .isNotEmpty &&
+                                                                                                                                    int
+                                                                                                                                            .parse(
+                                                                                                                                            maxPriceController
+                                                                                                                                                    .text) <
+                                                                                                                                            int
+                                                                                                                                                    .parse(
+                                                                                                                                                    value)) {
+                                                                                                                                return "El precio mínimo debe ser menor o igual que el precio máximo";
+                                                                                                                            }
+                                                                                                                            return null;
+                                                                                                                        }
+                                                                                                                )
+                                                                                                            ],
+                                                                                                        )
+                                                                                                ),
+                                                                                                Padding(
+                                                                                                        padding: EdgeInsets
+                                                                                                                .symmetric(
+                                                                                                                horizontal: 20,
+                                                                                                                vertical: 10
+                                                                                                        ),
+                                                                                                        child: Column(
+                                                                                                            mainAxisSize: MainAxisSize
+                                                                                                                    .min,
+                                                                                                            crossAxisAlignment: CrossAxisAlignment
+                                                                                                                    .start,
+                                                                                                            children: <
+                                                                                                                    Widget>[
+                                                                                                                Text(
+                                                                                                                    "Precio máximo",
+                                                                                                                    style: TextStyle(
+                                                                                                                            color: Color(
+                                                                                                                                    0xFF0069D9),
+                                                                                                                            fontSize: 12
+                                                                                                                    ),
+                                                                                                                ),
+                                                                                                                TextFormField(
+                                                                                                                        decoration: InputDecoration(
+                                                                                                                                labelText: "--Cualquiera--",
+                                                                                                                                contentPadding: EdgeInsets
+                                                                                                                                        .only(
+                                                                                                                                        top: 0,
+                                                                                                                                        bottom: 5),
+                                                                                                                                hasFloatingPlaceholder: false,
+                                                                                                                                errorMaxLines: 3,
+                                                                                                                                prefixText: "\$ ",
+                                                                                                                                prefixStyle: TextStyle(
+                                                                                                                                        fontWeight: FontWeight
+                                                                                                                                                .bold
+                                                                                                                                ),
+                                                                                                                                suffixText: " CUC",
+                                                                                                                                suffixStyle: TextStyle(
+                                                                                                                                        fontWeight: FontWeight
+                                                                                                                                                .bold
+                                                                                                                                )
+                                                                                                                        ),
+                                                                                                                        keyboardType: TextInputType
+                                                                                                                                .number,
+                                                                                                                        controller: maxPriceController,
+                                                                                                                        validator: (value) {
+                                                                                                                            if (value
+                                                                                                                                    .isNotEmpty &&
+                                                                                                                                    minPriceController
+                                                                                                                                            .text
+                                                                                                                                            .isNotEmpty &&
+                                                                                                                                    int
+                                                                                                                                            .parse(
+                                                                                                                                            minPriceController
+                                                                                                                                                    .text) >
+                                                                                                                                            int
+                                                                                                                                                    .parse(
+                                                                                                                                                    value)) {
+                                                                                                                                return "El precio máximo debe ser mayor o igual que el precio mínimo";
+                                                                                                                            }
+                                                                                                                            return null;
+                                                                                                                        }
+                                                                                                                )
+                                                                                                            ],
+                                                                                                        )
+                                                                                                ),
+                                                                                                Padding(
+                                                                                                        padding: EdgeInsets
+                                                                                                                .symmetric(
+                                                                                                                horizontal: 20,
+                                                                                                                vertical: 10
+                                                                                                        ),
+                                                                                                        child: Column(
+                                                                                                            mainAxisSize: MainAxisSize
+                                                                                                                    .min,
+                                                                                                            crossAxisAlignment: CrossAxisAlignment
+                                                                                                                    .start,
+                                                                                                            children: <
+                                                                                                                    Widget>[
+                                                                                                                Text(
+                                                                                                                    "Cuartos",
+                                                                                                                    style: TextStyle(
+                                                                                                                            color: Color(
+                                                                                                                                    0xFF0069D9),
+                                                                                                                            fontSize: 12
+                                                                                                                    ),
+                                                                                                                ),
+                                                                                                                DropdownButton(
+                                                                                                                    isExpanded: true,
+                                                                                                                    value: bedroomValue,
+                                                                                                                    onChanged: (newValue) {
+                                                                                                                        setState(() {
+                                                                                                                            bedroomValue =
+                                                                                                                                    newValue;
+                                                                                                                        });
+                                                                                                                    },
+                                                                                                                    items: numbers
+                                                                                                                            .map((type) {
+                                                                                                                        return DropdownMenuItem(
+                                                                                                                            child: new Text(
+                                                                                                                                    type),
+                                                                                                                            value: type,
+                                                                                                                        );
+                                                                                                                    })
+                                                                                                                            .toList(),
+                                                                                                                )
+                                                                                                            ],
+                                                                                                        )
+                                                                                                ),
+                                                                                                Padding(
+                                                                                                        padding: EdgeInsets
+                                                                                                                .symmetric(
+                                                                                                                horizontal: 20,
+                                                                                                                vertical: 10
+                                                                                                        ),
+                                                                                                        child: Column(
+                                                                                                            mainAxisSize: MainAxisSize
+                                                                                                                    .min,
+                                                                                                            crossAxisAlignment: CrossAxisAlignment
+                                                                                                                    .start,
+                                                                                                            children: <
+                                                                                                                    Widget>[
+                                                                                                                Text(
+                                                                                                                    "Baños",
+                                                                                                                    style: TextStyle(
+                                                                                                                            color: Color(
+                                                                                                                                    0xFF0069D9),
+                                                                                                                            fontSize: 12
+                                                                                                                    ),
+                                                                                                                ),
+                                                                                                                DropdownButton(
+                                                                                                                    isExpanded: true,
+                                                                                                                    value: bathroomValue,
+                                                                                                                    onChanged: (newValue) {
+                                                                                                                        setState(() {
+                                                                                                                            bathroomValue =
+                                                                                                                                    newValue;
+                                                                                                                        });
+                                                                                                                    },
+                                                                                                                    items: numbers
+                                                                                                                            .map((type) {
+                                                                                                                        return DropdownMenuItem(
+                                                                                                                            child: new Text(
+                                                                                                                                    type),
+                                                                                                                            value: type,
+                                                                                                                        );
+                                                                                                                    })
+                                                                                                                            .toList(),
+                                                                                                                )
+                                                                                                            ],
+                                                                                                        )
+                                                                                                ),
+                                                                                            ],
+                                                                                        )
                                                                                 ),
-                                                                            ),
-                                                                            DropdownButton(
-                                                                                isExpanded: true,
-                                                                                value: bedroomValue,
-                                                                                onChanged: (
-                                                                                    newValue) {
-                                                                                    setState(() {
-                                                                                        bedroomValue =
-                                                                                            newValue;
-                                                                                    });
-                                                                                },
-                                                                                items: numbers
-                                                                                    .map((
-                                                                                    type) {
-                                                                                    return DropdownMenuItem(
-                                                                                        child: new Text(
-                                                                                            type),
-                                                                                        value: type,
-                                                                                    );
-                                                                                })
-                                                                                    .toList(),
-                                                                            )
-                                                                        ],
-                                                                    )
-                                                                ),
-                                                                Padding(
-                                                                    padding: EdgeInsets
-                                                                        .symmetric(
-                                                                        horizontal: 20,
-                                                                        vertical: 10
-                                                                    ),
-                                                                    child: Column(
-                                                                        mainAxisSize: MainAxisSize
-                                                                            .min,
-                                                                        crossAxisAlignment: CrossAxisAlignment
-                                                                            .start,
-                                                                        children: <
-                                                                            Widget>[
-                                                                            Text(
-                                                                                "Baños",
-                                                                                style: TextStyle(
-                                                                                    color: Color(
-                                                                                        0xFF0069D9),
-                                                                                    fontSize: 12
-                                                                                ),
-                                                                            ),
-                                                                            DropdownButton(
-                                                                                isExpanded: true,
-                                                                                value: bathroomValue,
-                                                                                onChanged: (
-                                                                                    newValue) {
-                                                                                    setState(() {
-                                                                                        bathroomValue =
-                                                                                            newValue;
-                                                                                    });
-                                                                                },
-                                                                                items: numbers
-                                                                                    .map((
-                                                                                    type) {
-                                                                                    return DropdownMenuItem(
-                                                                                        child: new Text(
-                                                                                            type),
-                                                                                        value: type,
-                                                                                    );
-                                                                                })
-                                                                                    .toList(),
-                                                                            )
-                                                                        ],
-                                                                    )
-                                                                ),
-                                                            ],
-                                                        )
-                                                    ),
-                                                    Column(
-                                                        mainAxisSize: MainAxisSize
-                                                            .min,
-                                                        children: <Widget>[
-                                                            Divider(
-                                                                color: Colors
-                                                                    .black26,
-                                                                height: 1,
-                                                            ),
-                                                            Row(
-                                                                mainAxisSize: MainAxisSize
-                                                                    .max,
-                                                                children: <
-                                                                    Widget>[
-                                                                    Expanded(
-                                                                        child: MaterialButton(
-                                                                            child: Text(
-                                                                                "Cerrar",
-                                                                                style: TextStyle(
-                                                                                    color: Color(
-                                                                                        0xFFDC3545)
-                                                                                ),
-                                                                            ),
-                                                                            onPressed: () {
-                                                                                close();
-                                                                                Navigator
-                                                                                    .of(
-                                                                                    context)
-                                                                                    .pop();
-                                                                            },
-                                                                            elevation: 0,
-                                                                            focusElevation: 0,
-                                                                            hoverElevation: 0,
-                                                                            highlightElevation: 0,
-                                                                            disabledElevation: 0,
-                                                                            padding: EdgeInsets
-                                                                                .all(
-                                                                                20),
-                                                                        ),
-                                                                    ),
-                                                                    Expanded(
-                                                                        child: MaterialButton(
-                                                                            child: Text(
-                                                                                "Buscar"),
-                                                                            onPressed: () {
-                                                                                if (_formKey
-                                                                                    .currentState
-                                                                                    .validate()) {
-                                                                                    search();
-                                                                                    Navigator
-                                                                                        .of(
-                                                                                        context)
-                                                                                        .pop();
-                                                                                }
-                                                                            },
-                                                                            elevation: 0,
-                                                                            focusElevation: 0,
-                                                                            hoverElevation: 0,
-                                                                            highlightElevation: 0,
-                                                                            disabledElevation: 0,
-                                                                            textColor: Color(
-                                                                                0xFF0069D9),
-                                                                            padding: EdgeInsets
-                                                                                .all(
-                                                                                20),
-                                                                        ),
-                                                                    )
-                                                                ],
-                                                            )
-                                                        ],
+                                                                                Column(
+                                                                                    mainAxisSize: MainAxisSize
+                                                                                            .min,
+                                                                                    children: <
+                                                                                            Widget>[
+                                                                                        Divider(
+                                                                                            color: Colors
+                                                                                                    .black26,
+                                                                                            height: 1,
+                                                                                        ),
+                                                                                        Row(
+                                                                                            mainAxisSize: MainAxisSize
+                                                                                                    .max,
+                                                                                            children: <
+                                                                                                    Widget>[
+                                                                                                Expanded(
+                                                                                                    child: MaterialButton(
+                                                                                                        child: Text(
+                                                                                                            "Cerrar",
+                                                                                                            style: TextStyle(
+                                                                                                                    color: Color(
+                                                                                                                            0xFFDC3545)
+                                                                                                            ),
+                                                                                                        ),
+                                                                                                        onPressed: () {
+                                                                                                            close();
+                                                                                                            Navigator
+                                                                                                                    .of(
+                                                                                                                    context)
+                                                                                                                    .pop();
+                                                                                                        },
+                                                                                                        elevation: 0,
+                                                                                                        focusElevation: 0,
+                                                                                                        hoverElevation: 0,
+                                                                                                        highlightElevation: 0,
+                                                                                                        disabledElevation: 0,
+                                                                                                        padding: EdgeInsets
+                                                                                                                .all(
+                                                                                                                20),
+                                                                                                    ),
+                                                                                                ),
+                                                                                                Expanded(
+                                                                                                    child: MaterialButton(
+                                                                                                        child: Text(
+                                                                                                                "Buscar"),
+                                                                                                        onPressed: () {
+                                                                                                            if (_formKey
+                                                                                                                    .currentState
+                                                                                                                    .validate()) {
+                                                                                                                search();
+                                                                                                                Navigator
+                                                                                                                        .of(
+                                                                                                                        context)
+                                                                                                                        .pop();
+                                                                                                            }
+                                                                                                        },
+                                                                                                        elevation: 0,
+                                                                                                        focusElevation: 0,
+                                                                                                        hoverElevation: 0,
+                                                                                                        highlightElevation: 0,
+                                                                                                        disabledElevation: 0,
+                                                                                                        textColor: Color(
+                                                                                                                0xFF0069D9),
+                                                                                                        padding: EdgeInsets
+                                                                                                                .all(
+                                                                                                                20),
+                                                                                                    ),
+                                                                                                )
+                                                                                            ],
+                                                                                        )
+                                                                                    ],
+                                                                                )
+                                                                            ],
+                                                                        )
+                                                                );
+                                                            }
                                                     )
-                                                ],
                                             )
-                                        );
-                                    }
-                                )
+                                    )
                             )
-                        )
-                    )
-                );
-            }
+                    );
+                }
         );
     }
-    
+
     void close() {
         setState(() {
             this.provinceValue =
@@ -1164,15 +1139,15 @@ class HomeState extends State<Home> {
             (this.maxPrice != null) ? this.maxPrice.toString() : "";
             this.bedroomValue =
             (this.bedrooms != null)
-                ? this.bedrooms.toString()
-                : "--Cualquiera--";
+                    ? this.bedrooms.toString()
+                    : "--Cualquiera--";
             this.bathroomValue =
             (this.bathrooms != null)
-                ? this.bathrooms.toString()
-                : "--Cualquiera--";
+                    ? this.bathrooms.toString()
+                    : "--Cualquiera--";
         });
     }
-    
+
     void clear() {
         setState(() {
             this.isFiltered = false;
@@ -1186,7 +1161,7 @@ class HomeState extends State<Home> {
         });
         close();
     }
-    
+
     void search() {
         setState(() {
             this.isFiltered = true;
@@ -1230,11 +1205,11 @@ class HomeState extends State<Home> {
 }
 
 class HomeCard extends StatelessWidget {
-    
+
     final HomeEntity data;
-    
+
     const HomeCard({Key key, @required this.data}) : super(key: key);
-    
+
     @override
     Widget build(BuildContext context) {
         var color;
@@ -1247,219 +1222,214 @@ class HomeCard extends StatelessWidget {
         } else {
             color = CardColors.green;
         }
-        
+
         return InkWell(
-            onTap: () {
-                Navigator.of(context).push(
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            HomeDetails(data: data)
-                    )
-                );
-            },
-            child: Padding(
-                padding: EdgeInsets.all(10),
-                child: Card(
-                    elevation: 0.0,
-                    color: color,
-                    shape: RoundedRectangleBorder(
-                        side: BorderSide(color: Colors.black26, width: 1),
-                        borderRadius: BorderRadius.all(Radius.circular(4))
-                    ),
-                    child: Padding(
-                        padding: EdgeInsets.all(1),
-                        child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                                CachedNetworkImage(
-                                    imageUrl: data.firstImageUrl != null
-                                        ? data.firstImageUrl
-                                        : "http://www.hogarencuba.com/images/t_phantom-house.jpg",
-                                    fit: BoxFit.fitWidth,
-                                    placeholder: (context, url) =>
-                                        Padding(
-                                            padding: EdgeInsets.all(20),
-                                            child: CircularProgressIndicator()
+                onTap: () {
+                    Navigator.of(context).pushNamed(HomeDetails.routeName, arguments: data);
+                },
+                child: Padding(
+                        padding: EdgeInsets.all(10),
+                        child: Card(
+                            elevation: 0.0,
+                            color: color,
+                            shape: RoundedRectangleBorder(
+                                    side: BorderSide(color: Colors.black26, width: 1),
+                                    borderRadius: BorderRadius.all(Radius.circular(4))
+                            ),
+                            child: Padding(
+                                padding: EdgeInsets.all(1),
+                                child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                        CachedNetworkImage(
+                                                imageUrl: data.firstImageUrl != null
+                                                        ? data.firstImageUrl
+                                                        : "http://www.hogarencuba.com/images/t_phantom-house.jpg",
+                                                fit: BoxFit.fitWidth,
+                                                placeholder: (context, url) =>
+                                                        Padding(
+                                                                padding: EdgeInsets.all(20),
+                                                                child: CircularProgressIndicator()
+                                                        ),
+                                                errorWidget: (context, url, error) =>
+                                                        Image.asset(
+                                                            "assets/images/home_without_picture.jpg",
+                                                            fit: BoxFit.fitWidth,
+                                                        )
                                         ),
-                                    errorWidget: (context, url, error) =>
-                                        Image.asset(
-                                            "assets/images/home_without_picture.jpg",
-                                            fit: BoxFit.fitWidth,
-                                        )
-                                ),
-                                Container(
-                                    padding: EdgeInsets.all(20),
-                                    child: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: <Widget>[
-                                            Row(
-                                                mainAxisSize: MainAxisSize.max,
-                                                mainAxisAlignment: MainAxisAlignment
-                                                    .spaceBetween,
-                                                crossAxisAlignment: CrossAxisAlignment
-                                                    .start,
+                                        Container(
+                                            padding: EdgeInsets.all(20),
+                                            child: Column(
+                                                mainAxisSize: MainAxisSize.min,
                                                 children: <Widget>[
-                                                    Expanded(
-                                                        child: Text(
-                                                            "${data
-                                                                .code}: ${data
-                                                                .title}",
-                                                            softWrap: true,
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .white,
-                                                                fontSize: 18,
-                                                                fontWeight: FontWeight
-                                                                    .bold
-                                                            )
-                                                        ),
-                                                    ),
-                                                    Padding(
-                                                        padding: EdgeInsets
-                                                            .only(left: 20),
-                                                        child: Icon(
-                                                            Icons.star_border,
-                                                            size: 32,
-                                                            color: Colors.white)
-                                                    )
-                                                ],
-                                            ),
-                                            Padding(
-                                                padding: EdgeInsets.only(
-                                                    top: 20)
-                                            ),
-                                            Row(
-                                                mainAxisSize: MainAxisSize.max,
-                                                crossAxisAlignment: CrossAxisAlignment
-                                                    .start,
-                                                children: <Widget>[
-                                                    Expanded(
-                                                        child: RichText(
-                                                            text: TextSpan(
-                                                                text: data
-                                                                    .location,
-                                                                style: TextStyle(
-                                                                    color: Colors
-                                                                        .white,
-                                                                    fontWeight: FontWeight
-                                                                        .bold
-                                                                ),
-                                                                children: <
-                                                                    TextSpan>[
-                                                                    TextSpan(
-                                                                        text: ": ${data
-                                                                            .description}",
+                                                    Row(
+                                                        mainAxisSize: MainAxisSize.max,
+                                                        mainAxisAlignment: MainAxisAlignment
+                                                                .spaceBetween,
+                                                        crossAxisAlignment: CrossAxisAlignment
+                                                                .start,
+                                                        children: <Widget>[
+                                                            Expanded(
+                                                                child: Text(
+                                                                        "${data
+                                                                                .code}: ${data
+                                                                                .title}",
+                                                                        softWrap: true,
                                                                         style: TextStyle(
-                                                                            color: Colors
-                                                                                .white,
-                                                                            fontWeight: FontWeight
-                                                                                .normal,
+                                                                                color: Colors
+                                                                                        .white,
+                                                                                fontSize: 18,
+                                                                                fontWeight: FontWeight
+                                                                                        .bold
                                                                         )
-                                                                    )
-                                                                ]
+                                                                ),
                                                             ),
-                                                            overflow: TextOverflow
-                                                                .ellipsis,
-                                                            maxLines: 3
-                                                        ),
+                                                            Padding(
+                                                                    padding: EdgeInsets
+                                                                            .only(left: 20),
+                                                                    child: Icon(
+                                                                            Icons.star_border,
+                                                                            size: 32,
+                                                                            color: Colors.white)
+                                                            )
+                                                        ],
+                                                    ),
+                                                    Padding(
+                                                            padding: EdgeInsets.only(
+                                                                    top: 20)
+                                                    ),
+                                                    Row(
+                                                        mainAxisSize: MainAxisSize.max,
+                                                        crossAxisAlignment: CrossAxisAlignment
+                                                                .start,
+                                                        children: <Widget>[
+                                                            Expanded(
+                                                                child: RichText(
+                                                                        text: TextSpan(
+                                                                                text: data
+                                                                                        .location,
+                                                                                style: TextStyle(
+                                                                                        color: Colors
+                                                                                                .white,
+                                                                                        fontWeight: FontWeight
+                                                                                                .bold
+                                                                                ),
+                                                                                children: <
+                                                                                        TextSpan>[
+                                                                                    TextSpan(
+                                                                                            text: ": ${data
+                                                                                                    .description}",
+                                                                                            style: TextStyle(
+                                                                                                color: Colors
+                                                                                                        .white,
+                                                                                                fontWeight: FontWeight
+                                                                                                        .normal,
+                                                                                            )
+                                                                                    )
+                                                                                ]
+                                                                        ),
+                                                                        overflow: TextOverflow
+                                                                                .ellipsis,
+                                                                        maxLines: 3
+                                                                ),
+                                                            )
+                                                        ],
                                                     )
                                                 ],
-                                            )
-                                        ],
-                                    ),
+                                            ),
+                                        ),
+                                        Divider(
+                                            color: Colors.black26,
+                                            height: 4,
+                                        ),
+                                        Container(
+                                                padding: EdgeInsets.all(20),
+                                                child: Row(
+                                                    mainAxisSize: MainAxisSize.max,
+                                                    mainAxisAlignment: MainAxisAlignment
+                                                            .spaceAround,
+                                                    children: <Widget>[
+                                                        Row(
+                                                            mainAxisSize: MainAxisSize.max,
+                                                            children: <Widget>[
+                                                                Icon(
+                                                                    FontAwesomeIcons.bed,
+                                                                    color: Colors.white,
+                                                                    size: 15,
+                                                                ),
+                                                                Padding(
+                                                                    padding: EdgeInsets
+                                                                            .only(
+                                                                            right: 10),
+                                                                ),
+                                                                Text(
+                                                                    data.bedroomsCount > 0 ?
+                                                                    data.bedroomsCount
+                                                                            .toString() : "?",
+                                                                    style: TextStyle(
+                                                                            color: Colors.white
+                                                                    ),
+                                                                )
+                                                            ],
+                                                        ),
+                                                        Row(
+                                                            mainAxisSize: MainAxisSize.max,
+                                                            children: <Widget>[
+                                                                Icon(
+                                                                    FontAwesomeIcons.bath,
+                                                                    color: Colors.white,
+                                                                    size: 15,
+                                                                ),
+                                                                Padding(
+                                                                    padding: EdgeInsets
+                                                                            .only(
+                                                                            right: 10),
+                                                                ),
+                                                                Text(
+                                                                    data.bathroomsCount > 0
+                                                                            ?
+                                                                    data.bathroomsCount
+                                                                            .toString()
+                                                                            :
+                                                                    "?",
+                                                                    style: TextStyle(
+                                                                            color: Colors.white
+                                                                    ),
+                                                                )
+                                                            ],
+                                                        ),
+                                                        Row(
+                                                            mainAxisSize: MainAxisSize.max,
+                                                            children: <Widget>[
+                                                                Icon(
+                                                                    FontAwesomeIcons.car,
+                                                                    color: Colors.white,
+                                                                    size: 15,
+                                                                ),
+                                                                Padding(
+                                                                    padding: EdgeInsets
+                                                                            .only(
+                                                                            right: 10),
+                                                                ),
+                                                                Text(
+                                                                    data.garageCount > 0
+                                                                            ? data.garageCount
+                                                                            .toString()
+                                                                            : "No",
+                                                                    style: TextStyle(
+                                                                            color: Colors.white
+                                                                    ),
+                                                                )
+                                                            ],
+                                                        ),
+                                                    ],
+                                                )
+                                        )
+                                    ],
                                 ),
-                                Divider(
-                                    color: Colors.black26,
-                                    height: 4,
-                                ),
-                                Container(
-                                    padding: EdgeInsets.all(20),
-                                    child: Row(
-                                        mainAxisSize: MainAxisSize.max,
-                                        mainAxisAlignment: MainAxisAlignment
-                                            .spaceAround,
-                                        children: <Widget>[
-                                            Row(
-                                                mainAxisSize: MainAxisSize.max,
-                                                children: <Widget>[
-                                                    Icon(
-                                                        FontAwesomeIcons.bed,
-                                                        color: Colors.white,
-                                                        size: 15,
-                                                    ),
-                                                    Padding(
-                                                        padding: EdgeInsets
-                                                            .only(
-                                                            right: 10),
-                                                    ),
-                                                    Text(
-                                                        data.bedroomsCount > 0 ?
-                                                        data.bedroomsCount
-                                                            .toString() : "?",
-                                                        style: TextStyle(
-                                                            color: Colors.white
-                                                        ),
-                                                    )
-                                                ],
-                                            ),
-                                            Row(
-                                                mainAxisSize: MainAxisSize.max,
-                                                children: <Widget>[
-                                                    Icon(
-                                                        FontAwesomeIcons.bath,
-                                                        color: Colors.white,
-                                                        size: 15,
-                                                    ),
-                                                    Padding(
-                                                        padding: EdgeInsets
-                                                            .only(
-                                                            right: 10),
-                                                    ),
-                                                    Text(
-                                                        data.bathroomsCount > 0
-                                                            ?
-                                                        data.bathroomsCount
-                                                            .toString()
-                                                            :
-                                                        "?",
-                                                        style: TextStyle(
-                                                            color: Colors.white
-                                                        ),
-                                                    )
-                                                ],
-                                            ),
-                                            Row(
-                                                mainAxisSize: MainAxisSize.max,
-                                                children: <Widget>[
-                                                    Icon(
-                                                        FontAwesomeIcons.car,
-                                                        color: Colors.white,
-                                                        size: 15,
-                                                    ),
-                                                    Padding(
-                                                        padding: EdgeInsets
-                                                            .only(
-                                                            right: 10),
-                                                    ),
-                                                    Text(
-                                                        data.garageCount > 0
-                                                            ? data.garageCount
-                                                            .toString()
-                                                            : "No",
-                                                        style: TextStyle(
-                                                            color: Colors.white
-                                                        ),
-                                                    )
-                                                ],
-                                            ),
-                                        ],
-                                    )
-                                )
-                            ],
-                        ),
-                    ),
+                            ),
+                        )
                 )
-            )
         );
     }
 }
@@ -1469,44 +1439,44 @@ class Retry extends StatelessWidget {
     Widget build(BuildContext context) {
         return Padding(
             padding: EdgeInsets
-                .all(
-                30),
+                    .all(
+                    30),
             child: Row(
                 mainAxisSize: MainAxisSize
-                    .max,
+                        .max,
                 mainAxisAlignment: MainAxisAlignment
-                    .center,
+                        .center,
                 children: <
-                    Widget>[
+                        Widget>[
                     Column(
                         mainAxisSize: MainAxisSize
-                            .max,
+                                .max,
                         mainAxisAlignment: MainAxisAlignment
-                            .center,
+                                .center,
                         children: <
-                            Widget>[
+                                Widget>[
                             Padding(
-                                padding: EdgeInsets
-                                    .only(
-                                    bottom: 10),
-                                child: Text(
-                                    "Compruebe su conexión de red."
-                                )
+                                    padding: EdgeInsets
+                                            .only(
+                                            bottom: 10),
+                                    child: Text(
+                                            "Compruebe su conexión de red."
+                                    )
                             ),
                             RaisedButton(
                                 child: Text(
                                     "Reintentar",
                                     style: TextStyle(
-                                        color: Colors
-                                            .white
+                                            color: Colors
+                                                    .white
                                     ),
                                 ),
                                 onPressed: () {
                                     blocs
-                                        .homes();
+                                            .homes();
                                 },
                                 color: Color(
-                                    0xFF0069D9),
+                                        0xFF0069D9),
                             )
                         ],
                     )
